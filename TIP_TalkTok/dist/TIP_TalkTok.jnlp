@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp spec="1.0" xmlns:jfx="http://javafx.com" href="TIP_TalkTok.jnlp">
+  <information>
+    <title>TIP_TalkTok</title>
+    <vendor>Gosia</vendor>
+    <description>null</description>
+    <offline-allowed/>
+  </information>
+  <resources>
+    <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
+    <jar href="TIP_TalkTok.jar" size="201198" download="eager" />
+  </resources>
+  <applet-desc  width="800" height="600" main-class="com.javafx.main.NoJavaFXFallback"  name="TIP_TalkTok" >
+    <param name="requiredFXVersion" value="8.0+"/>
+  </applet-desc>
+  <jfx:javafx-desc  width="800" height="600" main-class="tip_talktok.TIP_TalkTok"  name="TIP_TalkTok" />
+  <update check="always"/>
+</jnlp>
