@@ -10,7 +10,6 @@
 
 <AnchorPane id="AnchorPane" prefHeight="477.0" prefWidth="678.0" style="-fx-background-color: #F5CEE1;" stylesheets="@../css/login.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="talktok.FXMLDocumentController">
     <children>
-        <Button fx:id="button" layoutX="98.0" layoutY="300.0" onAction="#handleButtonAction" prefHeight="26.0" prefWidth="475.0" style="-fx-background-color: #FF8A47;" text="Zaloguj" textFill="#0e060c" />
         <Label fx:id="label" layoutX="104.0" layoutY="180.0" minHeight="16" minWidth="69" text="Login" />
       <Button fx:id="button1" layoutX="98.0" layoutY="383.0" onAction="#handleButtonAction" prefHeight="26.0" prefWidth="475.0" style="-fx-background-color: #F24F60;" text="Zarejestruj" textFill="#0e060c" />
       <ImageView fitHeight="98.0" fitWidth="343.0" layoutX="170.0" layoutY="76.0" pickOnBounds="true" preserveRatio="true">
@@ -22,5 +21,7 @@
       <TextField layoutX="98.0" layoutY="198.0" prefHeight="26.0" prefWidth="475.0" />
       <Button fx:id="button2" layoutX="98.0" layoutY="343.0" onAction="#handleButtonAction" prefHeight="26.0" prefWidth="200.0" style="-fx-background-color: none;" text="Zapomniałem hasła" textFill="#0e060c" />
       <Label fx:id="label1" layoutX="104.0" layoutY="239.0" minHeight="16" minWidth="69" text="Hasło" />
+        <Button fx:id="button" layoutX="98.0" layoutY="300.0" onAction="#handleButtonAction" prefHeight="26.0" prefWidth="475.0" style="-fx-background-color: #FF8A47;" text="Zaloguj" textFill="#0e060c" />
+      <Button layoutX="648.0" layoutY="1.0" mnemonicParsing="false" prefHeight="26.0" onAction="#quitButtonAction" prefWidth="32.0" style="-fx-background-color: none;" text="X" />
     </children>
 </AnchorPane>
