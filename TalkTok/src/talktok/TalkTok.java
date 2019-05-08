@@ -22,7 +22,7 @@ public class TalkTok extends Application {
         Parent root = FXMLLoader.load(getClass().getResource("xml/FXMLDocument.fxml"));
         
         Scene scene = new Scene(root);
-        scene.getStylesheets().add("css/login.css");
+       /// scene.getStylesheets().add("css/login.css");
         stage.setScene(scene);
         stage.show();
     }
