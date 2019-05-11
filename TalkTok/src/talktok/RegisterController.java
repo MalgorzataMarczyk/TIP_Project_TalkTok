@@ -43,9 +43,9 @@ public class RegisterController implements Initializable {
     
     list.removeAll(list);
     String f = "Kobieta";
-    String m = "Mężczyzna";
+    ///String m = "Mężczyzna";
     String q = "Inna";
-    list.addAll(f,m,q);
+    list.addAll(f,q);
     
     genders.getItems().addAll(list);
         
