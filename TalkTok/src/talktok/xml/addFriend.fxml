@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="159.0" prefWidth="504.0" style=" -fx-background-color: linear-gradient(#fb6caa, #fcc4e4);" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="talktok.LoginController">
+   <children>
+      <Pane layoutX="-6.0" prefHeight="159.0" prefWidth="386.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <Label alignment="CENTER" contentDisplay="CENTER" layoutX="2.0" layoutY="22.0" prefHeight="26.0" prefWidth="504.0" text="Dodaj przyjaciela do listy kontaktów" textAlignment="CENTER" wrapText="true">
+               <font>
+                  <Font name="Arial" size="21.0" />
+               </font>
+            </Label>
+            <TextField layoutX="151.0" layoutY="63.0" prefHeight="25.0" prefWidth="241.0" />
+            <Button layoutX="428.0" layoutY="67.0" mnemonicParsing="false" prefHeight="54.0" prefWidth="60.0" style="-fx-background-color: none;">
+               <graphic>
+                  <ImageView fitHeight="46.0" fitWidth="61.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../images/user-2493635_960_720.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
+            <Label layoutX="9.0" layoutY="67.0" text="Nazwa użytkownika" />
+            <Label layoutX="53.0" layoutY="115.0" text="Pseudonim" />
+            <TextField layoutX="151.0" layoutY="108.0" prefHeight="26.0" prefWidth="241.0" />
+            
+         </children>
+      </Pane>
+   </children>
+</AnchorPane>

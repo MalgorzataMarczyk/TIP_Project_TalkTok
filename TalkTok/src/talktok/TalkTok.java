@@ -5,6 +5,7 @@
  */
 package talktok;
 
+import java.net.URL;
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
@@ -15,10 +16,11 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 import javafx.scene.image.Image;
+import javafx.scene.media.AudioClip;
 
 public class TalkTok extends Application {
     
-    
+   
     
     private double xOffset = 0;
     private double yOffset = 0;
@@ -75,6 +77,8 @@ public class TalkTok extends Application {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        
+        
         launch(args);
     }
     

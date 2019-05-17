@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="159.0" prefWidth="386.0" style=" -fx-background-color: linear-gradient(#fb6caa, #fcc4e4);" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="talktok.LoginController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="159.0" prefWidth="386.0" style=" -fx-background-color: linear-gradient(#fb6caa, #fcc4e4);" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="talktok.CallingController">
    <children>
       <Pane layoutX="-6.0" prefHeight="101.0" prefWidth="297.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -26,7 +26,7 @@
             
          </children>
       </Pane>
-      <Button layoutX="130.0" layoutY="90.0" mnemonicParsing="false" style="-fx-background-color: none;">
+      <Button layoutX="130.0" layoutY="90.0" mnemonicParsing="false" onAction="#AnswerButtonAction" style="-fx-background-color: none;">
          <graphic>
             <ImageView fitHeight="51.0" fitWidth="46.0" pickOnBounds="true" preserveRatio="true">
                <image>
@@ -35,7 +35,7 @@
             </ImageView>
          </graphic>
       </Button>
-      <Button layoutX="241.0" layoutY="90.0" mnemonicParsing="false" style="-fx-background-color: none;">
+      <Button layoutX="241.0" layoutY="90.0" mnemonicParsing="false" onAction="#DeclineButtonAction" style="-fx-background-color: none;">
          <graphic>
             <ImageView fitHeight="51.0" fitWidth="46.0" pickOnBounds="true" preserveRatio="true">
                <image>
