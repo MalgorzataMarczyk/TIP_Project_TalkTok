@@ -24,12 +24,16 @@ public class RecorderThread extends Thread{
     byte[] buffer = new byte[512];
     public InetAddress server_ip;
     public int server_port;
+    public volatile boolean Exit = false;
     
     @Override
     public void run(){
+        System.out.println("Exit = " + this.Exit);
+        
     int i=0;
-    System.out.println("Start");
-        while(MainController.calling){
+   
+    while(!Exit){
+        while(MainController.calling && !Exit){
         
             audio_in.read(buffer,0,buffer.length); 
             DatagramPacket data = new DatagramPacket(buffer,buffer.length,server_ip,server_port); ///wysylanie
@@ -40,9 +44,13 @@ public class RecorderThread extends Thread{
             Logger.getLogger(RecorderThread.class.getName()).log(Level.SEVERE, null, ex);
         }
         }
+    }
         
-        
+  
     
+    }
+      public void end(){
+       this.Exit = true;
     }
     
 }

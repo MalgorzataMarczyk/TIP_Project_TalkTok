@@ -44,22 +44,10 @@ public class MainController implements Initializable {
      * Initializes the controller class.
      */
     
-    public int port_server = 8888;
-    public String ip_server = "127.0.0.1";
+    
     public static boolean calling = false;
-    
-    public static AudioFormat getAudioFormat(){
-    
-        float sampleRate = 8000.0F;
-        int sampleSizeInBits = 16;
-        int channel = 2;
-        boolean singed = true;
-        boolean bigEndian = false;
-        return new AudioFormat(sampleRate, sampleSizeInBits, channel, singed, bigEndian);
-        
-    }
-    
-    TargetDataLine audio_in;
+   
+   
     
     
     
@@ -116,12 +104,7 @@ public class MainController implements Initializable {
         stage.setScene(scene);
         stage.show();
         //////////////////////////////////
-               try {
-                   init_audio();
-               } catch (Exception ex) {
-                   Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);
                
-               }
         
        
         
@@ -135,27 +118,7 @@ public class MainController implements Initializable {
           Platform.exit();
     }
     
-    public void init_audio() throws LineUnavailableException, UnknownHostException, SocketException{
     
-    AudioFormat format = getAudioFormat();
-    DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
-    
-    if(!AudioSystem.isLineSupported(info)){
-      System.out.println("Error!!");
-        System.exit(0);
-    }
-    audio_in = (TargetDataLine)AudioSystem.getLine(info);
-        audio_in.open(format);
-        audio_in.start();
-        RecorderThread r = new RecorderThread();
-        InetAddress inet = InetAddress.getByName(ip_server);
-        r.audio_in = audio_in;
-        r.out = new DatagramSocket(); 
-        r.server_ip = inet;
-        r.server_port = port_server;
-        calling = true;
-        r.start();
-    }
     
     
     

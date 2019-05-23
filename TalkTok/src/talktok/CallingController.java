@@ -43,7 +43,7 @@ URL path;
     public void initialize(URL url, ResourceBundle rb) {
         
      //potem powycinam dzwieki teraz mi sie nie chce  
-      //playSound("sounds/cat_party.mp3");
+      playSound("sounds/cat_party.mp3");
         
         
     }    
@@ -70,6 +70,9 @@ URL path;
           System.out.println("todo");
           
     }
+    
+    
+    
     
     
 }
