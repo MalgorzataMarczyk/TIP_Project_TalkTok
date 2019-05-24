@@ -59,6 +59,7 @@ public class FXMLDocumentController implements Initializable {
         p.in = new DatagramSocket(port);
         p.data_out = data_out;
         TalkTok_Server.calling = true;
+        
         p.start();
     }
     

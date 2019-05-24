@@ -5,6 +5,9 @@
  */
 package talktok_server;
 
+import java.net.ServerSocket;
+import java.sql.Connection;
+import java.util.ArrayList;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -19,8 +22,19 @@ public class TalkTok_Server extends Application {
     
     public static boolean calling = false;
     
+    
+      ServerSocket serversocket = null;
+    public static ArrayList<client> arr_client = new ArrayList<>();
+    public static Connection connect = null; 
+    
+    
+    
     @Override
     public void start(Stage stage) throws Exception {
+        
+        ////laczenie sie z baza danych//////
+        
+        
         Parent root = FXMLLoader.load(getClass().getResource("FXMLDocument.fxml"));
         
         Scene scene = new Scene(root);

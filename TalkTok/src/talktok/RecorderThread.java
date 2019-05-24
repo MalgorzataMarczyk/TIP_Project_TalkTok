@@ -24,21 +24,21 @@ public class RecorderThread extends Thread{
     byte[] buffer = new byte[512];
     public InetAddress server_ip;
     public int server_port;
-    public volatile boolean Exit = false;
     
     @Override
     public void run(){
-        System.out.println("Exit = " + this.Exit);
+        
         
     int i=0;
-   
-    while(!Exit){
-        while(MainController.calling && !Exit){
-        
+   System.out.println("Exit = " + MainController.Exit);
+    while(!MainController.Exit){
+        System.out.println("Exit = " + MainController.Exit);
+        while(MainController.calling && (!MainController.Exit)){
+        try {
             audio_in.read(buffer,0,buffer.length); 
             DatagramPacket data = new DatagramPacket(buffer,buffer.length,server_ip,server_port); ///wysylanie
             System.out.println("send #"+i++);
-        try {
+        
             out.send(data);
         } catch (IOException ex) {
             Logger.getLogger(RecorderThread.class.getName()).log(Level.SEVERE, null, ex);
@@ -46,11 +46,15 @@ public class RecorderThread extends Thread{
         }
     }
         
-  
+    System.out.println("END");
+    audio_in.close();
+    audio_in.drain();
     
     }
       public void end(){
-       this.Exit = true;
+        MainController.Exit = true;
+        MainController.calling = false;
+        System.out.println("PENIS");
     }
     
 }

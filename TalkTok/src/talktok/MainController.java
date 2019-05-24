@@ -47,6 +47,7 @@ public class MainController implements Initializable {
     
     public static boolean calling = false;
    
+    public static volatile boolean Exit = false;
    
     
     
