@@ -18,6 +18,7 @@ import javafx.scene.Scene;
 import javafx.scene.media.AudioClip;
 import static javafx.scene.media.AudioClip.INDEFINITE;
 import javafx.stage.Stage;
+import static talktok.MainController.client;
 
 /**
  * FXML Controller class
@@ -60,7 +61,8 @@ URL path;
         window.setScene(sceneMain);
         window.show();
            
-           
+           String destination = "127.0.0.1";
+        client.startCall(destination);
     }
     
     

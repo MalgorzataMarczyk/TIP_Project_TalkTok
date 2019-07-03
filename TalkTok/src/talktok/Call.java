@@ -1,11 +1,15 @@
 package talktok;
 
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -18,8 +22,8 @@ import javax.sound.sampled.TargetDataLine;
 public class Call {
 
 	/* Audio variables */
-	boolean capturing = false;
-	boolean inCall = false;
+	public static volatile boolean capturing = false;
+	static volatile boolean inCall = false;
 	String inCallWith;
 	AudioFormat audioFormat;
 	TargetDataLine mic;
@@ -36,6 +40,9 @@ public class Call {
 			new ReceiveThread(port2).start();
 			new SendThread(partner, port1).start();
 		}
+                
+                
+                
 	}
 
 	class ReceiveThread extends Thread {
@@ -68,6 +75,7 @@ public class Call {
 
 				byte[] temp = new byte[5000];
 				while (inCall) {
+                                    ////////////rozpierdala sie jak wyciszamy mikrofon
 					DatagramPacket packet = new DatagramPacket(temp,
 							temp.length);
 					ds.receive(packet);
@@ -75,6 +83,7 @@ public class Call {
 					byte[] input = packet.getData();
 					sourceDataLine.write(input, 0, input.length);
 				}
+                                System.out.println("wychodzimy");
 				sourceDataLine.drain();
 				sourceDataLine.close();
 
@@ -120,7 +129,8 @@ public class Call {
 						.getByName(destination);
 
 				byte temp[] = new byte[10000];
-				while (capturing) {
+				while (inCall) {
+                                    while (capturing && inCall){
 					int cnt = mic.read(temp, 0, temp.length);
 					if (cnt > 0) {
 						DatagramPacket packet = new DatagramPacket(temp, cnt,
@@ -128,7 +138,7 @@ public class Call {
 						ds.send(packet);
 					}
 				}
-
+                                }
 				ds.close();
 				mic.close();
 			} catch (Exception e) {

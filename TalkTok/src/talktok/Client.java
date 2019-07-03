@@ -5,6 +5,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import javafx.application.Platform;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 
 
 public class Client {
@@ -132,6 +136,7 @@ public class Client {
 	class ListenerThread extends Thread {
 
 		public void run() {
+                    
 			while (listening) {
 				try {
 					int command = inputStream.readInt();
@@ -156,6 +161,26 @@ public class Client {
 						System.out.println(sender
 								+ " has started a call with you");
 						
+                                                Platform.runLater(new Runnable(){
+                                                    @Override
+                                                    public void run() {
+                                                        
+        try {
+        FXMLLoader fxmlLoader = new FXMLLoader();
+        fxmlLoader.setLocation(getClass().getResource("xml/activeCall.fxml"));
+        Scene scene = new Scene(fxmlLoader.load());
+        Stage stage = new Stage();
+         ///stage.initStyle(StageStyle.UNDECORATED);
+        stage.setScene(scene);
+        stage.show();
+    } catch (IOException e) {
+       
+    }
+                                                    } });
+                                                
+                                                
+                                                
+                                                
 					} else if (command == END_CALL) {
 						String sender = (String) inputStream.readObject();
 						call.endCall();
@@ -174,7 +199,7 @@ public class Client {
 				} catch (ClassNotFoundException e) {
 				}
 			}
-		}
+		} 
 	}
 
 	/*

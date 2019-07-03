@@ -67,6 +67,23 @@ public class MainController implements Initializable {
         
     }
     
+    
+    public void openCall(){
+    
+        try {
+        FXMLLoader fxmlLoader = new FXMLLoader();
+        fxmlLoader.setLocation(getClass().getResource("xml/activeCall.fxml"));
+        Scene scene = new Scene(fxmlLoader.load());
+        Stage stage = new Stage();
+         ///stage.initStyle(StageStyle.UNDECORATED);
+        stage.setScene(scene);
+        stage.show();
+    } catch (IOException e) {
+       
+    }
+    }
+    
+    
     @FXML
     private void HistoryButtonAction(ActionEvent event) throws Exception {
         
@@ -109,6 +126,7 @@ public class MainController implements Initializable {
     
     @FXML
     private void quitButtonAction(ActionEvent event) {
+        client.disconnect();
           Platform.exit();
     }
     

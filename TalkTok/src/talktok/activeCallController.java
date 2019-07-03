@@ -44,8 +44,7 @@ public class activeCallController implements Initializable {
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        String destination = "127.0.0.1";
-        client.startCall(destination);
+        
         
         
         
@@ -65,12 +64,13 @@ public class activeCallController implements Initializable {
     
     @FXML
     private void MicButtonAction(ActionEvent event) {
+        ///nie dziala :(
         System.out.println("mic " + Mic);
         if(Mic){
-        MainController.calling = false;
+        Call.capturing = false;
         Mic = false;
         }else {
-          MainController.calling = true;
+           Call.capturing = true;
           Mic = true;}
     }
     
