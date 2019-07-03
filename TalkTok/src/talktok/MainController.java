@@ -6,32 +6,18 @@
 package talktok;
 
 import java.io.IOException;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.SocketException;
 import java.net.URL;
-import java.net.UnknownHostException;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.DataLine;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.SourceDataLine;
-import javax.sound.sampled.TargetDataLine;
+import javax.swing.JOptionPane;
 
 /**
  * FXML Controller class
@@ -48,13 +34,20 @@ public class MainController implements Initializable {
     public static boolean calling = false;
    
     public static volatile boolean Exit = false;
-   
+   public static Client client;
     
     
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
+        
+        client = new Client("127.0.0.1",
+				3003);
+		client.start();
+        
+        
+        
     }    
 
     @FXML
