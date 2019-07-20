@@ -3,6 +3,10 @@ package talktok_server;
 import java.net.ServerSocket;
 import java.util.ArrayList;
 
+/**
+ *
+ * @author Lena
+ */
 public class Talktok_Server {
 
     public static ArrayList<ClientThread> clients = new ArrayList<>();

@@ -5,6 +5,7 @@
  */
 package talktok;
 
+import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
@@ -65,13 +66,11 @@ public class activeCallController implements Initializable {
     @FXML
     private void MicButtonAction(ActionEvent event) {
         ///nie dziala :(
-        System.out.println("mic " + Mic);
-        if(Mic){
-        Call.capturing = false;
-        Mic = false;
-        }else {
-           Call.capturing = true;
-          Mic = true;}
+        
+       
+            client.Mic();
+        
+        
     }
     
     

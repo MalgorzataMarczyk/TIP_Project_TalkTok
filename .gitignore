@@ -29,3 +29,8 @@ hs_err_pid*
 /TalkTok_Server/build/
 /aaaaaaaaaaaaaaaaaadasdada/nbproject/private/
 /aaaaaaaaaaaaaaaaaadasdada/build/
+/Server/nbproject/private/
+/Server/build/
+/Server/TalkTok_Server/nbproject/private/
+/Server/TalkTok_Server/build/
+/Server/TalkTok_Server/dist/

@@ -10,7 +10,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-
 public class Client {
 
 	/* Socket related global variables. */
@@ -28,8 +27,9 @@ public class Client {
 	private final int CALL = 4;
 	private final int END_CALL = 5;
 	private final int ERROR = 6;
-	private final int RECORDING = 7;
+	private final int MIC_ON  = 7;
 	private final int PRIVATE_MESSAGE = 8;
+        private final int MIC_OFF = 9;
 
 	/* User interface associated with the individual client. */
 	///private static ClientGUI gui;
@@ -152,7 +152,8 @@ public class Client {
 					} else if (command == BROADCAST_MESSAGE) {
 						String message = (String) inputStream.readObject();
 						System.out.println(message);
-					} else if (command == CALL) {
+					} 
+                                        else if (command == CALL) {
 						String sender = (String) inputStream.readObject();
 						inCallWith = sender;
 
@@ -190,7 +191,15 @@ public class Client {
 						String message = (String) inputStream.readObject();
 						System.out.println(message);
 						
-					} else if (command == PRIVATE_MESSAGE) {
+					} else if (command == MIC_ON) {
+						String sender = (String) inputStream.readObject();
+						System.out.println("on");
+						call.hearing = true; ////////do tego momentu dziala dobrze, wiemy ze sie wyciszyl
+					}else if (command == MIC_OFF) {
+                                                String sender = (String) inputStream.readObject();
+						System.out.println("off");
+						call.hearing = false;
+					}else if (command == PRIVATE_MESSAGE) {
 						String sender = (String) inputStream.readObject();
 						String message = (String) inputStream.readObject();
 						System.out.println(sender + ": " + message);
@@ -219,7 +228,7 @@ public class Client {
 
 	public void sendRecording(String recipient, byte[] arr) {
 		try {
-			outputStream.writeInt(RECORDING);
+			outputStream.writeInt(MIC_ON);
 			outputStream.writeObject(recipient);
 			outputStream.writeObject(arr);
 		} catch (Exception e) {
@@ -227,5 +236,22 @@ public class Client {
 		}
 	}
 
-	
+	public void Mic() {
+            try {
+            if(call.capturing){
+            call.capturing = false;
+            outputStream.writeInt(MIC_OFF);
+            outputStream.writeObject(inCallWith);
+            System.out.println("send");
+        }else {
+          call.capturing = true;
+             outputStream.writeInt(MIC_ON);
+             outputStream.writeObject(inCallWith);
+            }
+             } catch (Exception e) {
+
+		}
+        }
+        
+        
 }

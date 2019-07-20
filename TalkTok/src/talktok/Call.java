@@ -22,8 +22,9 @@ import javax.sound.sampled.TargetDataLine;
 public class Call {
 
 	/* Audio variables */
-	public static volatile boolean capturing = false;
+	public volatile boolean capturing = false;
 	static volatile boolean inCall = false;
+        public volatile boolean hearing = false;
 	String inCallWith;
 	AudioFormat audioFormat;
 	TargetDataLine mic;
@@ -33,6 +34,7 @@ public class Call {
 	public Call(int initiator, int port1, int port2, String partner) {
 		inCall = true;
 		capturing = true;
+                hearing = true;
 		if (initiator == 0) {
 			new ReceiveThread(port1).start();
 			new SendThread(partner, port2).start();
@@ -75,14 +77,16 @@ public class Call {
 
 				byte[] temp = new byte[5000];
 				while (inCall) {
+                                           while (inCall && hearing){
                                     ////////////rozpierdala sie jak wyciszamy mikrofon
 					DatagramPacket packet = new DatagramPacket(temp,
 							temp.length);
 					ds.receive(packet);
-
 					byte[] input = packet.getData();
+                                       
 					sourceDataLine.write(input, 0, input.length);
 				}
+                               }
                                 System.out.println("wychodzimy");
 				sourceDataLine.drain();
 				sourceDataLine.close();
@@ -159,7 +163,10 @@ public class Call {
 
 	public void endCall() {
 		capturing = false;
+                hearing = false;
 		inCall = false;
 	}
 
+         
+        
 }

@@ -18,8 +18,9 @@ public class ClientThread extends Thread {
 	private final int CALL = 4;
 	private final int END_CALL = 5;
 	private final int ERROR = 6;
-	private final int RECORDING = 7;
+	private final int MIC_ON = 7;
 	private final int PRIVATE_MESSAGE = 8;
+        private final int MIC_OFF = 9;
 	boolean listening;
 	int id;
 
@@ -43,6 +44,8 @@ public class ClientThread extends Thread {
 		while (listening) {
 			try {
 				int command = inputStream.readInt();
+                                    
+                                Talktok_Server.updateGUI(command + " is a command");
 				if (command == DISCONNECT) {
 					Talktok_Server.disconnectClient(id);
 					broadcastMessage(DISCONNECT, hostname);
@@ -53,6 +56,7 @@ public class ClientThread extends Thread {
 					String message = (String) inputStream.readObject();
 					broadcastMessage(BROADCAST_MESSAGE, hostname + ": " + message);
 				} else if (command == CALL) {
+                                
 					String destination = (String) inputStream.readObject();
 					setUpCall(destination);				
 				} else if (command == END_CALL) {
@@ -60,12 +64,15 @@ public class ClientThread extends Thread {
 					endCall(destination);
 					Talktok_Server.updateGUI(hostname + " terminated a call with "
 							+ destination);
-				} else if (command == RECORDING) {
-					String recipient = (String) inputStream.readObject();
-					byte[] recording = (byte[]) inputStream.readObject();
-					sendIndividualMessage(recipient, RECORDING, recording);
-					Talktok_Server.updateGUI(hostname + " sent a recording to " + recipient);
-				} else if (command == PRIVATE_MESSAGE) {
+				} else if (command == MIC_ON) {
+						String destination = (String) inputStream.readObject();
+                                                unmuteMic(destination);
+						Talktok_Server.updateGUI(hostname + " turn on mic");
+				}else if (command == MIC_OFF) {
+						String destination = (String) inputStream.readObject();
+                                                muteMic(destination);
+						Talktok_Server.updateGUI(hostname + " turn off mic");
+				}else if (command == PRIVATE_MESSAGE) {
 					String recipient = (String) inputStream.readObject();
 					String message = (String) inputStream.readObject();					
 					sendIndividualMessage(recipient, PRIVATE_MESSAGE, message);
@@ -133,6 +140,33 @@ public class ClientThread extends Thread {
 		}
 	}
 	
+        
+        private void muteMic(String destination) {
+		for (ClientThread c : Talktok_Server.clients) {
+			if (c.getHostname().equals(destination)) {
+				try {
+					c.outputStream.writeInt(MIC_OFF);
+					c.outputStream.writeObject(hostname);
+				} catch (Exception e) {
+
+				}
+			}
+		}
+	}
+        
+        private void unmuteMic(String destination) {
+		for (ClientThread c : Talktok_Server.clients) {
+			if (c.getHostname().equals(destination)) {
+				try {
+					c.outputStream.writeInt(MIC_ON);
+					c.outputStream.writeObject(hostname);
+				} catch (Exception e) {
+
+				}
+			}
+		}
+	}
+        
 	private void sendIndividualMessage(String recipient, int type, Object obj) {
 		for (ClientThread c : Talktok_Server.clients) {
 			if(c.getHostname().equals(recipient)) {
@@ -147,6 +181,8 @@ public class ClientThread extends Thread {
 		}
 	}
 
+       
+        
 	public String getHostname() {
 		return hostname;
 	}
