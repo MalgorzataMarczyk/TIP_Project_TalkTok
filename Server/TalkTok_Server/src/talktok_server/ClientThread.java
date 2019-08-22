@@ -14,13 +14,13 @@ public class ClientThread extends Thread {
 	private final int CONNECT = 0;
 	private final int DISCONNECT = 1;
 	private final int UPDATE = 2;
-	private final int BROADCAST_MESSAGE = 3;
-	private final int CALL = 4;
-	private final int END_CALL = 5;
-	private final int ERROR = 6;
-	private final int MIC_ON = 7;
-	private final int PRIVATE_MESSAGE = 8;
-        private final int MIC_OFF = 9;
+	private final int CALL = 3;
+	private final int END_CALL = 4;
+	private final int ERROR = 5;
+	private final int MIC_ON  = 6;
+        private final int MIC_OFF = 7;
+        private final int ADD_FRIEND = 8;
+        private final int REGISTER = 9;
 	boolean listening;
 	int id;
 
@@ -52,9 +52,9 @@ public class ClientThread extends Thread {
 					updateClients();
 					listening = false;
 					break;
-				} else if (command == BROADCAST_MESSAGE) {
-					String message = (String) inputStream.readObject();
-					broadcastMessage(BROADCAST_MESSAGE, hostname + ": " + message);
+				} else if (command == ADD_FRIEND) {
+					//String message = (String) inputStream.readObject();
+					///broadcastMessage(BROADCAST_MESSAGE, hostname + ": " + message);
 				} else if (command == CALL) {
                                 
 					String destination = (String) inputStream.readObject();
@@ -72,11 +72,11 @@ public class ClientThread extends Thread {
 						String destination = (String) inputStream.readObject();
                                                 muteMic(destination);
 						Talktok_Server.updateGUI(hostname + " turn off mic");
-				}else if (command == PRIVATE_MESSAGE) {
-					String recipient = (String) inputStream.readObject();
+				}else if (command == REGISTER) {
+					/*String recipient = (String) inputStream.readObject();
 					String message = (String) inputStream.readObject();					
 					sendIndividualMessage(recipient, PRIVATE_MESSAGE, message);
-					Talktok_Server.updateGUI(hostname + " sent a message to " + recipient);
+					Talktok_Server.updateGUI(hostname + " sent a message to " + recipient);*/
 				}
 			} catch (IOException e) {
 				e.printStackTrace();

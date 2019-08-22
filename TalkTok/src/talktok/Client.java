@@ -23,13 +23,13 @@ public class Client {
 	private final int CONNECT = 0;
 	private final int DISCONNECT = 1;
 	private final int UPDATE = 2;
-	private final int BROADCAST_MESSAGE = 3;
-	private final int CALL = 4;
-	private final int END_CALL = 5;
-	private final int ERROR = 6;
-	private final int MIC_ON  = 7;
-	private final int PRIVATE_MESSAGE = 8;
-        private final int MIC_OFF = 9;
+	private final int CALL = 3;
+	private final int END_CALL = 4;
+	private final int ERROR = 5;
+	private final int MIC_ON  = 6;
+        private final int MIC_OFF = 7;
+        private final int ADD_FRIEND = 8;
+        private final int REGISTER = 9;
 
 	/* User interface associated with the individual client. */
 	///private static ClientGUI gui;
@@ -94,9 +94,9 @@ public class Client {
 	/* Sends the parameter message to the server to be sent to other clients. */
 	public void sendMessage(String message, String destination) {
 		try {
-			outputStream.writeInt(PRIVATE_MESSAGE);
-			outputStream.writeObject(destination);
-			outputStream.writeObject(message);
+			//outputStream.writeInt(PRIVATE_MESSAGE);
+			//outputStream.writeObject(destination);
+			//outputStream.writeObject(message);
 		} catch (Exception e) {
 		}
 	}
@@ -149,9 +149,9 @@ public class Client {
 					} else if (command == UPDATE) {
 						String[] list = (String[]) inputStream.readObject();
 						System.out.println(list);
-					} else if (command == BROADCAST_MESSAGE) {
-						String message = (String) inputStream.readObject();
-						System.out.println(message);
+					} else if (command == ADD_FRIEND) {
+						//String message = (String) inputStream.readObject();
+						//System.out.println(message);
 					} 
                                         else if (command == CALL) {
 						String sender = (String) inputStream.readObject();
@@ -199,10 +199,10 @@ public class Client {
                                                 String sender = (String) inputStream.readObject();
 						System.out.println("off");
 						call.hearing = false;
-					}else if (command == PRIVATE_MESSAGE) {
-						String sender = (String) inputStream.readObject();
-						String message = (String) inputStream.readObject();
-						System.out.println(sender + ": " + message);
+					}else if (command == REGISTER) {
+						//String sender = (String) inputStream.readObject();
+						//String message = (String) inputStream.readObject();
+						//System.out.println(sender + ": " + message);
 					}
 				} catch (IOException e) {
 				} catch (ClassNotFoundException e) {
