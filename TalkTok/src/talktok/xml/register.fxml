@@ -21,18 +21,18 @@
             <Image url="@../images/logo.png" />
          </image>
       </ImageView>
-      <PasswordField layoutX="104.0" layoutY="257.0" prefHeight="26.0" prefWidth="238.0" />
-      <TextField layoutX="102.0" layoutY="197.0" prefHeight="26.0" prefWidth="238.0" />
+      <PasswordField fx:id="passwordTextField" layoutX="104.0" layoutY="257.0" prefHeight="26.0" prefWidth="238.0" />
+      <TextField fx:id="loginTextField" layoutX="102.0" layoutY="197.0" prefHeight="26.0" prefWidth="238.0" />
       <Label fx:id="label1" layoutX="104.0" layoutY="239.0" minHeight="16" minWidth="100.0" text="Hasło" />
       <Button layoutX="648.0" layoutY="1.0" mnemonicParsing="false" onAction="#quitButtonAction" prefHeight="26.0" prefWidth="32.0" style="-fx-background-color: none;" text="X" />
       <Label fx:id="label11" layoutX="368.0" layoutY="238.0" minHeight="16" minWidth="100.0" prefHeight="18.0" prefWidth="100.0" text="Powtórz hasło" />
       <Label fx:id="label2" layoutX="104.0" layoutY="292.0" minHeight="16" minWidth="100.0" text="Email" />
-      <TextField layoutX="102.0" layoutY="312.0" prefHeight="26.0" prefWidth="238.0" />
-      <CheckBox layoutX="109.0" layoutY="349.0" mnemonicParsing="false" prefHeight="18.0" prefWidth="143.0" text="Akceptuje regulamin" />
-      <DatePicker layoutX="369.0" layoutY="312.0" prefHeight="26.0" prefWidth="238.0" />
+      <TextField fx:id="emailTextField" layoutX="102.0" layoutY="312.0" prefHeight="26.0" prefWidth="238.0" />
+      <CheckBox fx:id="acceptCheckBox" layoutX="109.0" layoutY="349.0" mnemonicParsing="false" prefHeight="18.0" prefWidth="143.0" text="Akceptuje regulamin" />
+      <DatePicker fx:id="dateBirthDatePicker" layoutX="369.0" layoutY="312.0" prefHeight="26.0" prefWidth="238.0" />
     
       
-      <PasswordField layoutX="368.0" layoutY="257.0" prefHeight="26.0" prefWidth="238.0" />
+      <PasswordField fx:id="confirmPasswordTextField" layoutX="368.0" layoutY="257.0" prefHeight="26.0" prefWidth="238.0" />
       <Label fx:id="label111" layoutX="368.0" layoutY="179.0" minHeight="16" minWidth="100.0" prefHeight="18.0" prefWidth="84.0" text="Płeć" />
       <Label fx:id="label112" layoutX="369.0" layoutY="292.0" minHeight="16" minWidth="100.0" prefHeight="18.0" prefWidth="84.0" text="Data urodzenia" />
       <VBox layoutX="368.0" layoutY="197.0" prefHeight="34.0" prefWidth="151.0">
