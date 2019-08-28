@@ -25,7 +25,7 @@ import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.TargetDataLine;
-import static talktok.MainController.client;
+import static talktok.TalkTok.client;
 
 /**
  * FXML Controller class

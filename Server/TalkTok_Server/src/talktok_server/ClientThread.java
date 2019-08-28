@@ -21,6 +21,7 @@ public class ClientThread extends Thread {
         private final int MIC_OFF = 7;
         private final int ADD_FRIEND = 8;
         private final int REGISTER = 9;
+        private final int LOGIN = 10;
 	boolean listening;
 	int id;
 
@@ -53,8 +54,7 @@ public class ClientThread extends Thread {
 					listening = false;
 					break;
 				} else if (command == ADD_FRIEND) {
-					//String message = (String) inputStream.readObject();
-					///broadcastMessage(BROADCAST_MESSAGE, hostname + ": " + message);
+					/* */
 				} else if (command == CALL) {
                                 
 					String destination = (String) inputStream.readObject();
@@ -73,10 +73,17 @@ public class ClientThread extends Thread {
                                                 muteMic(destination);
 						Talktok_Server.updateGUI(hostname + " turn off mic");
 				}else if (command == REGISTER) {
-					/*String recipient = (String) inputStream.readObject();
-					String message = (String) inputStream.readObject();					
-					sendIndividualMessage(recipient, PRIVATE_MESSAGE, message);
-					Talktok_Server.updateGUI(hostname + " sent a message to " + recipient);*/
+					/* */
+				}else if (command == LOGIN) {
+                                    
+					/* 
+                                    String credentials = (String) inputStream.readObject(); łapiemy credentiale
+                                    
+                                    
+                                    
+                                    
+                                    */
+                                       
 				}
 			} catch (IOException e) {
 				e.printStackTrace();

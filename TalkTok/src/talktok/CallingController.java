@@ -18,7 +18,7 @@ import javafx.scene.Scene;
 import javafx.scene.media.AudioClip;
 import static javafx.scene.media.AudioClip.INDEFINITE;
 import javafx.stage.Stage;
-import static talktok.MainController.client;
+import static talktok.TalkTok.client;
 
 /**
  * FXML Controller class
@@ -34,7 +34,7 @@ URL path;
     
         path = getClass().getResource(name);
         ac  = new AudioClip(path.toString());
-        ac.setCycleCount(1); ///jak jest indefinite aby byla petla to sie pierdoli dunno why, 
+        ac.setCycleCount(1); ///jak jest indefinite aby byla petla to sie psuje dunno why, 
                              ///wiec mozna po prostu dac 20 bo w sumie i tak po pewnym czasie sie rozłaczy
         ac.play();
         

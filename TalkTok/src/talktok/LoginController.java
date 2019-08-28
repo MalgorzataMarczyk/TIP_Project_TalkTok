@@ -19,6 +19,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
+import static talktok.TalkTok.client;
 
 /**
  *
@@ -36,7 +37,16 @@ public class LoginController implements Initializable {
     @FXML
     private void LoginButtonAction(ActionEvent event) throws Exception {
         
-      
+      client.Login();
+        
+        
+        
+        
+        
+        
+        
+        
+        ///////////////Jeśli poprawnie przeszło
        Parent MainParent = FXMLLoader.load(getClass().getResource("xml/main.fxml"));
        
        

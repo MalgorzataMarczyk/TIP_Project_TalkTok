@@ -18,6 +18,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javax.swing.JOptionPane;
+import static talktok.TalkTok.client;
 
 /**
  * FXML Controller class
@@ -34,7 +35,7 @@ public class MainController implements Initializable {
     public static boolean calling = false;
    
     public static volatile boolean Exit = false;
-   public static Client client;
+   
     
     
     
@@ -42,9 +43,7 @@ public class MainController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
         
-        client = new Client("127.0.0.1",
-				3003);
-		client.start();
+        
         
         
         

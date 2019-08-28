@@ -5,6 +5,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -30,6 +32,7 @@ public class Client {
         private final int MIC_OFF = 7;
         private final int ADD_FRIEND = 8;
         private final int REGISTER = 9;
+        private final int LOGIN = 10;
 
 	/* User interface associated with the individual client. */
 	///private static ClientGUI gui;
@@ -91,6 +94,9 @@ public class Client {
 		}
 	}
 
+        
+        
+        
 	/* Sends the parameter message to the server to be sent to other clients. */
 	public void sendMessage(String message, String destination) {
 		try {
@@ -203,6 +209,8 @@ public class Client {
 						//String sender = (String) inputStream.readObject();
 						//String message = (String) inputStream.readObject();
 						//System.out.println(sender + ": " + message);
+					}else if (command == LOGIN) {
+						/*  */
 					}
 				} catch (IOException e) {
 				} catch (ClassNotFoundException e) {
@@ -251,6 +259,28 @@ public class Client {
              } catch (Exception e) {
 
 		}
+        }
+        
+        public void Login(){ /////najlepiej chyba żeby przyjmował dane w tablicy?
+            try {
+                System.out.println("loguje sie");
+                outputStream.writeInt(LOGIN); ///wysyłamy do serwera co chcemy zrobić
+                /*albo wysyłamy credentiale na raz albo po kolei
+                outputStream.writeObject(credentials);
+                */
+            } catch (IOException ex) {
+                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
+        public void Register(){
+            try {
+                outputStream.writeInt(REGISTER);
+                
+                
+            } catch (IOException ex) {
+                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         
         
