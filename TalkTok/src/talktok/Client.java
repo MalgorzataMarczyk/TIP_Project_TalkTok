@@ -22,6 +22,7 @@ public class Client {
 	private ObjectOutputStream outputStream;
 	private ObjectInputStream inputStream;
         private int ack;
+        public String [] serverData;
 
 	/* Integer commands for communication with the server. */
 	private final int CONNECT = 0;
@@ -36,6 +37,7 @@ public class Client {
     private final int REGISTER = 9;
      private final int LOGIN = 10;
      private final int SERVERMESSAGE = 99;
+     private final int SERVERDATA = 98;
 
 	/* User interface associated with the individual client. */
 	///private static ClientGUI gui;
@@ -220,7 +222,11 @@ public class Client {
 					}
                                         else if(command == SERVERMESSAGE){
                                             ack = (int)inputStream.readObject();
-                                            System.out.println(ack);
+                                            //System.out.println(ack);
+                                        }
+                                        else if (command == SERVERDATA){
+                                            serverData = (String[]) inputStream.readObject();
+                                            
                                         }
                                         else{
                                             System.out.println("czytam");
@@ -315,6 +321,17 @@ public class Client {
                 i++;                
             }          
             return ack;
+        }
+        
+        public String [] getServerData(){
+            while(serverData == null){
+                try {
+                    sleep(100);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            return serverData;
         }
         
 }

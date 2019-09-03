@@ -16,6 +16,9 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import javax.swing.JOptionPane;
 import static talktok.TalkTok.client;
@@ -30,22 +33,41 @@ public class MainController implements Initializable {
     /**
      * Initializes the controller class.
      */
+     @FXML
+    private Label labelUserName;
+
+    @FXML
+    private Label labelUserDescription;
     
+      @FXML
+    private TextField textUserDescription;
+
+    @FXML
+    private Button okDesButton;
+    
+    @FXML
+    private Button buttonLabelDesButton;
+    
+    String [] serverData;
+    
+    public String userName;
     
     public static boolean calling = false;
    
     public static volatile boolean Exit = false;
    
-    
+    public void uploadDataFromServer(){
+        serverData = client.getServerData();
+    }
     
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
-        
-        
-        
-        
+        textUserDescription.setVisible(false);
+        okDesButton.setVisible(false);
+        uploadDataFromServer();
+        userName = serverData[0];
+        labelUserName.setText(userName);
         
     }    
 
@@ -101,7 +123,23 @@ public class MainController implements Initializable {
        
     }
     
+    @FXML
+    void DescriptionButtonAction(ActionEvent event) {
+        labelUserDescription.setVisible(false);
+        textUserDescription.setVisible(true);
+        okDesButton.setVisible(true);
+
+    }
     
+    @FXML
+    void SetDescriptionAction(ActionEvent event) {
+        textUserDescription.setVisible(false);
+        okDesButton.setVisible(false);
+        labelUserDescription.setText(textUserDescription.getText());
+        labelUserDescription.setVisible(true);
+        //TODO Send description to server and save it in to database
+
+    }
     
     @FXML
     private void MakeCallButtonAction(ActionEvent event) {

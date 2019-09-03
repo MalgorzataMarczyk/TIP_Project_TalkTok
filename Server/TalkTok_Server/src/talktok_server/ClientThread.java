@@ -261,6 +261,10 @@ public class ClientThread extends Thread {
             Talktok_Server.updateGUI(hostname + " response for code 99: " + message);
             outputStream.writeInt(99);
             outputStream.writeObject(message);
+            
+            outputStream.writeInt(98);
+            outputStream.writeObject(userData);
+            
         }
         
 	public String getHostname() {
