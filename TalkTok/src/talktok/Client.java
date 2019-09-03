@@ -31,11 +31,11 @@ public class Client {
 	private final int END_CALL = 4;
 	private final int ERROR = 5;
 	private final int MIC_ON  = 6;
-        private final int MIC_OFF = 7;
-        private final int ADD_FRIEND = 8;
-        private final int REGISTER = 9;
-        private final int LOGIN = 10;
-        private final int SERVERMESSAGE = 99;
+	private final int MIC_OFF = 7;
+    private final int ADD_FRIEND = 8;
+    private final int REGISTER = 9;
+     private final int LOGIN = 10;
+     private final int SERVERMESSAGE = 99;
 
 	/* User interface associated with the individual client. */
 	///private static ClientGUI gui;
@@ -216,7 +216,7 @@ public class Client {
 					}else if (command == REGISTER) {
 						
 					}else if (command == LOGIN) {
-						
+
 					}
                                         else if(command == SERVERMESSAGE){
                                             ack = (int)inputStream.readObject();
@@ -273,7 +273,7 @@ public class Client {
 
 		}
         }
-        
+
         public int Login(String [] userData){ /////najlepiej chyba żeby przyjmował dane w tablicy?
             ack = 0;
             try {
@@ -316,6 +316,5 @@ public class Client {
             }          
             return ack;
         }
-        
         
 }

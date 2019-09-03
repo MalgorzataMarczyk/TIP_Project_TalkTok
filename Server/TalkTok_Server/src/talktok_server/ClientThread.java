@@ -83,7 +83,7 @@ public class ClientThread extends Thread {
 				}else if (command == REGISTER) {
 					readRegisterData();
 				}else if (command == LOGIN) {
-                                        readLoginData();    
+                                        readLoginData();
 				}
 			} catch (IOException e) {
 				e.printStackTrace();

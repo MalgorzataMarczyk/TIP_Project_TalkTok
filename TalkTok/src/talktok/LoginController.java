@@ -74,7 +74,6 @@ public class LoginController implements Initializable {
     
     @FXML
     private void LoginButtonAction(ActionEvent event) throws Exception {
-        
         //Sprawdzenie poprawnosci uzupelnionych pol oraz wywolanie funkcji logowania//
         boolean dateState = true;
         boolean userLog;
@@ -96,6 +95,7 @@ public class LoginController implements Initializable {
         
         if(userLog){
             //Jeśli poprawnie przeszło
+
        Parent MainParent = FXMLLoader.load(getClass().getResource("xml/main.fxml"));
        Scene sceneMain = new Scene(MainParent);
        Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
