@@ -24,8 +24,15 @@ public class TalkTok extends Application {
     
     private double xOffset = 0;
     private double yOffset = 0;
+    public static Client client;
+    
     @Override
     public void start(Stage stage) throws Exception {
+        
+        client = new Client("127.0.0.1",
+				3003);
+		client.start(); ////////łączenie sie z serwerem
+        
         Parent login = FXMLLoader.load(getClass().getResource("xml/login.fxml"));
         
         ////Scene Login

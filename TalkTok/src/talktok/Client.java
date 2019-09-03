@@ -3,8 +3,11 @@ package talktok;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import static java.lang.Thread.sleep;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -18,6 +21,7 @@ public class Client {
 	private Socket socket;
 	private ObjectOutputStream outputStream;
 	private ObjectInputStream inputStream;
+        private int ack;
 
 	/* Integer commands for communication with the server. */
 	private final int CONNECT = 0;
@@ -30,6 +34,8 @@ public class Client {
         private final int MIC_OFF = 7;
         private final int ADD_FRIEND = 8;
         private final int REGISTER = 9;
+        private final int LOGIN = 10;
+        private final int SERVERMESSAGE = 99;
 
 	/* User interface associated with the individual client. */
 	///private static ClientGUI gui;
@@ -53,6 +59,10 @@ public class Client {
 		this.hostname = "127.0.0.1";///hostname; <- adres serwera
 		this.portNumber = portNumber;  ////port serwera
 	}
+
+        public Client() {
+       
+        }
 
 	/*
 	 * Starts the Client object. Initializes a new Socket to connect to server.
@@ -91,6 +101,9 @@ public class Client {
 		}
 	}
 
+        
+        
+        
 	/* Sends the parameter message to the server to be sent to other clients. */
 	public void sendMessage(String message, String destination) {
 		try {
@@ -140,6 +153,7 @@ public class Client {
 			while (listening) {
 				try {
 					int command = inputStream.readInt();
+                                        System.out.println(command);
 					if (command == CONNECT) {
 						String hostname = (String) inputStream.readObject();
 						System.out.println(hostname + " connected");
@@ -148,7 +162,7 @@ public class Client {
 						System.out.println(hostname + " disconnected");
 					} else if (command == UPDATE) {
 						String[] list = (String[]) inputStream.readObject();
-						System.out.println(list);
+						System.out.println(list.length);
 					} else if (command == ADD_FRIEND) {
 						//String message = (String) inputStream.readObject();
 						//System.out.println(message);
@@ -200,13 +214,20 @@ public class Client {
 						System.out.println("off");
 						call.hearing = false;
 					}else if (command == REGISTER) {
-						//String sender = (String) inputStream.readObject();
-						//String message = (String) inputStream.readObject();
-						//System.out.println(sender + ": " + message);
+						
+					}else if (command == LOGIN) {
+						
 					}
+                                        else if(command == SERVERMESSAGE){
+                                            ack = (int)inputStream.readObject();
+                                            System.out.println(ack);
+                                        }
+                                        else{
+                                            System.out.println("czytam");
+                                        }
 				} catch (IOException e) {
 				} catch (ClassNotFoundException e) {
-				}
+				} 
 			}
 		} 
 	}
@@ -251,6 +272,49 @@ public class Client {
              } catch (Exception e) {
 
 		}
+        }
+        
+        public int Login(String [] userData){ /////najlepiej chyba żeby przyjmował dane w tablicy?
+            ack = 0;
+            try {
+                System.out.println("loguje sie");
+                outputStream.writeInt(LOGIN); ///wysyłamy do serwera co chcemy zrobić
+                outputStream.writeObject(userData);
+                
+            } catch (IOException ex) {
+                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            int i =0;
+            while(ack == 0 && i <5 ){
+                try {
+                    sleep(100);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                i++;                
+            }          
+            return ack;
+        }
+        
+        public int RegisterSendData(String [] userData){
+            ack = 0;
+            try {
+                outputStream.writeInt(REGISTER);
+                outputStream.writeObject(userData);
+            } catch (IOException ex) {
+                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            //Czekanie na ack z serwera
+            int i =0;
+            while(ack == 0 && i <5 ){
+                try {
+                    sleep(100);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                i++;                
+            }          
+            return ack;
         }
         
         

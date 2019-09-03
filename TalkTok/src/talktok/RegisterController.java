@@ -158,14 +158,16 @@ public class RegisterController implements Initializable {
         }
     }
     
-    public void sendUserToDatabase(String usLogin, String usPassword, String usEmail, LocalDate usBirthDate, String usGender ) throws ClassNotFoundException, SQLException{
-        Class.forName("com.mysql.jdbc.Driver");  
-        Connection con=DriverManager.getConnection( "jdbc:mysql://localhost:3306/tip?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC","root","password");  
-        //here sonoo is database name, root is username and password  
-        Statement stmt=con.createStatement();  
-        int rs=stmt.executeUpdate("INSERT INTO users (username, email, password, salt, birthdate, join_date, last_online_date)\n" +
-"VALUES"+ "('" + usLogin +"','" + usEmail +"','"+ usPassword +"','1','" + usBirthDate + "',CURDATE(),CURDATE());");  
-        con.close();  
+    public int sendUserToDatabase(String usLogin, String usPassword, String usEmail, LocalDate usBirthDate, String usGender ) throws ClassNotFoundException, SQLException{
+ 
+        String [] userData = new String[5];
+        userData[0] = usLogin;
+        userData[1] = usEmail;
+        userData[2] = usPassword;
+        userData[3] = usBirthDate.toString();
+        userData[4] = usGender;
+        return TalkTok.client.RegisterSendData(userData);      
+        
     }
         
     @FXML
@@ -184,16 +186,15 @@ public class RegisterController implements Initializable {
         }
       
       
-      try{
+      //try{
+      int errorMessage = 0;
           if(dataState){
-              sendUserToDatabase(userLogin, userPassword, userEmail, userBirthDate, userGender); 
-              userAdded = true;
+              errorMessage = sendUserToDatabase(userLogin, userPassword, userEmail, userBirthDate, userGender);
+              userAdded = errorMessage == 1;           
           }
           else
               userAdded = false;    
-        }catch(Exception e){ 
-            System.out.println(e);   
-        }
+        
       if(userAdded){
           JOptionPane.showMessageDialog(null, "Zostałaś poprawnie dodana!");
           Parent MainParent = FXMLLoader.load(getClass().getResource("xml/login.fxml"));
@@ -203,8 +204,14 @@ public class RegisterController implements Initializable {
           window.show();
       }
       else
-          JOptionPane.showMessageDialog(null, "Konto nie zostało dodane. Spróbuj ponownie.");
- 
+      {
+          if(errorMessage==2)
+            JOptionPane.showMessageDialog(null, "Użytkownik o podanym loginie istnieje już w bazie danych");
+          else if(errorMessage==3)
+            JOptionPane.showMessageDialog(null, "Użytkownik o podanym mailu istnieje już w bazie danych");
+          else
+            JOptionPane.showMessageDialog(null, "Konto nie zostało dodane. Spróbuj ponownie.");
+      }
     }
     
     @FXML

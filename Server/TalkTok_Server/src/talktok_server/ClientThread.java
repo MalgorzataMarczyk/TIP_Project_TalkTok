@@ -4,6 +4,13 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ClientThread extends Thread {
 
@@ -21,6 +28,7 @@ public class ClientThread extends Thread {
         private final int MIC_OFF = 7;
         private final int ADD_FRIEND = 8;
         private final int REGISTER = 9;
+        private final int LOGIN = 10;
 	boolean listening;
 	int id;
 
@@ -42,6 +50,7 @@ public class ClientThread extends Thread {
 		broadcastMessage(CONNECT, hostname);
 		updateClients();
 		while (listening) {
+                    
 			try {
 				int command = inputStream.readInt();
                                     
@@ -53,8 +62,7 @@ public class ClientThread extends Thread {
 					listening = false;
 					break;
 				} else if (command == ADD_FRIEND) {
-					//String message = (String) inputStream.readObject();
-					///broadcastMessage(BROADCAST_MESSAGE, hostname + ": " + message);
+					/* */
 				} else if (command == CALL) {
                                 
 					String destination = (String) inputStream.readObject();
@@ -73,10 +81,9 @@ public class ClientThread extends Thread {
                                                 muteMic(destination);
 						Talktok_Server.updateGUI(hostname + " turn off mic");
 				}else if (command == REGISTER) {
-					/*String recipient = (String) inputStream.readObject();
-					String message = (String) inputStream.readObject();					
-					sendIndividualMessage(recipient, PRIVATE_MESSAGE, message);
-					Talktok_Server.updateGUI(hostname + " sent a message to " + recipient);*/
+					readRegisterData();
+				}else if (command == LOGIN) {
+                                        readLoginData();    
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -181,7 +188,80 @@ public class ClientThread extends Thread {
 		}
 	}
 
-       
+        private void readRegisterData() throws IOException, ClassNotFoundException{
+            String [] userData;
+            userData = (String[]) inputStream.readObject();
+            //Zwrotny message to cliena. -1 error, 0 - po stronie klienta nie otrzymalem jeszcze odpowiedzi
+            //1 - wszytko ok, 2 - uzytkownik o takim loginie istnieje, 3 - uzytkownik o takim mailu istnieje
+            int message=-1;
+         
+            Class.forName("com.mysql.jdbc.Driver");  
+            try{
+                Connection con=DriverManager.getConnection( "jdbc:mysql://localhost:3306/tip?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC","root","password");  
+                Statement stmt=con.createStatement();
+                //Sprawdzanie czy dany uzytkownik istnieje juz w bazie - login//
+                ResultSet select = stmt.executeQuery("SELECT COUNT(username) AS usercount FROM users WHERE username = '" + userData[0] + "';");
+                select.next();
+                boolean userCount = select.getInt("usercount") == 0;
+                
+                //Sprawdzanie czy dany uzytkownik istnieje juz w bazie - email//
+                ResultSet selectEmail = stmt.executeQuery("SELECT COUNT(email) AS useremail FROM users WHERE email = '" + userData[1] + "';");
+                selectEmail.next();
+                boolean userMailCount = selectEmail.getInt("useremail") == 0;
+                if(userCount && userMailCount)
+                {
+                    
+                    int rs=stmt.executeUpdate("INSERT INTO users (username, email, password, salt, birthdate, join_date, last_online_date)\n" +
+                "VALUES"+ "('" + userData[0] +"','" + userData[1] +"','"+ userData[2] +"','1','" + userData[3] + "',CURDATE(),CURDATE());");  
+                    message =1;
+                }
+                else{
+                    if(userCount)
+                        message = 3;
+                    else
+                        message = 2;
+                }
+                con.close();       
+                
+            
+            } catch (SQLException ex) {
+                Logger.getLogger(ClientThread.class.getName()).log(Level.SEVERE, null, ex);
+            }
+             
+            Talktok_Server.updateGUI(hostname + " response for code 99: " + message);
+            outputStream.writeInt(99);
+            outputStream.writeObject(message);
+            //here sonoo is database name, root is username and password  
+ 
+           
+        }
+        
+        private void readLoginData() throws IOException, ClassNotFoundException{
+            String [] userData;
+            userData = (String[]) inputStream.readObject();
+            
+            //Zwrotny message to cliena. -1 error, 0 - po stronie klienta nie otrzymalem jeszcze odpowiedzi
+            //1 - wszytko ok, 4 - błedne hasło
+            int message=-1;
+            Class.forName("com.mysql.jdbc.Driver");  
+            try{
+                Connection con=DriverManager.getConnection( "jdbc:mysql://localhost:3306/tip?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC","root","password");  
+                Statement stmt=con.createStatement();
+                ResultSet qrUserData = stmt.executeQuery("SELECT password AS usPassword FROM users WHERE username = '" + userData[0] + "';");
+                qrUserData.next();
+                int correctPass = qrUserData.getString("usPassword").compareTo(userData[1]);
+                if(correctPass ==0)
+                    message =1;
+                else
+                    message=4;
+                con.close();  
+            }catch(SQLException ex) {
+                Logger.getLogger(ClientThread.class.getName()).log(Level.SEVERE, null, ex);  
+            }
+            Talktok_Server.updateGUI(hostname + " response for code 99: " + message);
+            outputStream.writeInt(99);
+            outputStream.writeObject(message);
+        }
         
 	public String getHostname() {
 		return hostname;

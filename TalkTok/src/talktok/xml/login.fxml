@@ -17,8 +17,8 @@
             <Image url="@../images/logo.png" />
          </image>
       </ImageView>
-      <PasswordField layoutX="98.0" layoutY="257.0" prefHeight="26.0" prefWidth="475.0" />
-      <TextField layoutX="98.0" layoutY="198.0" prefHeight="26.0" prefWidth="475.0" />
+      <PasswordField fx:id="passwordPasswordFile" layoutX="98.0" layoutY="257.0" prefHeight="26.0" prefWidth="475.0" />
+      <TextField fx:id="LoginTextField" layoutX="98.0" layoutY="198.0" prefHeight="26.0" prefWidth="475.0" />
       <Button fx:id="button2" alignment="TOP_LEFT" layoutX="98.0" layoutY="343.0" onAction="#LoginButtonAction" prefHeight="26.0" prefWidth="200.0" style="-fx-background-color: none;" text="Zapomniałam hasła" textFill="#0e060c" />
       <Label fx:id="label1" layoutX="104.0" layoutY="239.0" minHeight="16" minWidth="69" text="Hasło" />
         <Button fx:id="button" layoutX="98.0" layoutY="300.0" onAction="#LoginButtonAction" prefHeight="26.0" prefWidth="475.0" style="-fx-background-color: #FF8A47;" text="Zaloguj" textFill="#0e060c" />
