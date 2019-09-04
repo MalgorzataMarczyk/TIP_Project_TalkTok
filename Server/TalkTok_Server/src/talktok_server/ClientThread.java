@@ -4,8 +4,11 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.sql.Blob;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -29,8 +32,10 @@ public class ClientThread extends Thread {
         private final int ADD_FRIEND = 8;
         private final int REGISTER = 9;
         private final int LOGIN = 10;
+        private final int UPDATEDATA = 11;
 	boolean listening;
 	int id;
+        public String[] userDataArray = new String[5];
 
 	public ClientThread(Socket socket, int num) {
 		this.socket = socket;
@@ -84,7 +89,10 @@ public class ClientThread extends Thread {
 					readRegisterData();
 				}else if (command == LOGIN) {
                                         readLoginData();
-				}
+				}else if (command == UPDATEDATA){
+                                    userDataArray = (String []) inputStream.readObject();
+                                    UpdateData(userDataArray);
+                                }
 			} catch (IOException e) {
 				e.printStackTrace();
 			} catch (ClassNotFoundException e) {
@@ -239,6 +247,7 @@ public class ClientThread extends Thread {
         private void readLoginData() throws IOException, ClassNotFoundException{
             String [] userData;
             userData = (String[]) inputStream.readObject();
+             
             
             //Zwrotny message to cliena. -1 error, 0 - po stronie klienta nie otrzymalem jeszcze odpowiedzi
             //1 - wszytko ok, 4 - błedne hasło
@@ -254,7 +263,28 @@ public class ClientThread extends Thread {
                     message =1;
                 else
                     message=4;
-                con.close();  
+                qrUserData = stmt.executeQuery("SELECT username, email, status, description, last_online_date FROM users WHERE username = '" + userData[0] + "';");
+                try{
+                while(qrUserData.next()){
+                    String un = qrUserData.getString("username");
+                    String ue = qrUserData.getString("email");
+                    String ust = qrUserData.getString("status");
+                    //Blob uph = qrUserData.getBlob("photo");
+                    String udes = qrUserData.getString("description");
+                    Date udt = qrUserData.getDate("last_online_date");
+                    userDataArray[0] = un;
+                    userDataArray[1] = ue;
+                    userDataArray[2] = ust;
+                    userDataArray[3] = udes;
+                    userDataArray[4] = udt.toString();
+                }
+               
+                }catch (SQLException e ) {
+                
+                }finally {
+                    if (stmt != null) { con.close(); }
+                }
+                
             }catch(SQLException ex) {
                 Logger.getLogger(ClientThread.class.getName()).log(Level.SEVERE, null, ex);  
             }
@@ -262,12 +292,33 @@ public class ClientThread extends Thread {
             outputStream.writeInt(99);
             outputStream.writeObject(message);
             
+            for(String data : userDataArray){
+            System.out.println(data);
+        }
+            
             outputStream.writeInt(98);
-            outputStream.writeObject(userData);
+            outputStream.writeObject(userDataArray);
             
         }
         
 	public String getHostname() {
 		return hostname;
 	}
+        
+        public void UpdateData(String[] updateData) throws ClassNotFoundException{
+            Class.forName("com.mysql.jdbc.Driver");  
+            try{
+                Connection con=DriverManager.getConnection( "jdbc:mysql://localhost:3306/tip?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC","root","password");  
+                Statement stmt=con.createStatement();
+                PreparedStatement update = con.prepareStatement("UPDATE users SET status = ?, description = ?, last_online_date = CURRENT_DATE WHERE username = '" + updateData[0] + "';");
+                int status = Integer.parseInt(updateData[2]);
+                update.setInt(1,status);
+                update.setString(2, updateData[3]);
+                update.executeUpdate();
+                update.close();
+                con.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(ClientThread.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
 }

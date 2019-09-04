@@ -36,6 +36,7 @@ public class Client {
     private final int ADD_FRIEND = 8;
     private final int REGISTER = 9;
      private final int LOGIN = 10;
+     private final int UPDATEDATA = 11;
      private final int SERVERMESSAGE = 99;
      private final int SERVERDATA = 98;
 
@@ -332,6 +333,15 @@ public class Client {
                 }
             }
             return serverData;
+        }
+        
+        public void UpdateData(String[] updateData){
+            try{
+                outputStream.writeInt(UPDATEDATA);
+                outputStream.writeObject(updateData);
+            } catch (IOException ex) {
+                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         
 }

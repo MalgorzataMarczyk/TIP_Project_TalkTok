@@ -66,9 +66,17 @@ public class MainController implements Initializable {
         textUserDescription.setVisible(false);
         okDesButton.setVisible(false);
         uploadDataFromServer();
+        /*for(String data : serverData){
+            System.out.println(data);
+        }*/
         userName = serverData[0];
         labelUserName.setText(userName);
         
+        if(serverData[3] == null){
+            labelUserDescription.setText("Dodaj opis");
+        }
+        else
+            labelUserDescription.setText(serverData[3]);
     }    
 
     @FXML
@@ -82,10 +90,8 @@ public class MainController implements Initializable {
          ///stage.initStyle(StageStyle.UNDECORATED);
         stage.setScene(scene);
         stage.show();
-    } catch (IOException e) {
-       
-    }
-        
+        } catch (IOException e) { 
+        }   
     }
     
     
@@ -135,10 +141,11 @@ public class MainController implements Initializable {
     void SetDescriptionAction(ActionEvent event) {
         textUserDescription.setVisible(false);
         okDesButton.setVisible(false);
+        serverData[3] = textUserDescription.getText();
         labelUserDescription.setText(textUserDescription.getText());
         labelUserDescription.setVisible(true);
-        //TODO Send description to server and save it in to database
-
+        //Send update data to server and save it in to database
+        client.UpdateData(serverData);
     }
     
     @FXML
