@@ -5,6 +5,8 @@
  */
 package talktok;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -19,7 +21,14 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.Image;
+import javafx.scene.input.MouseEvent;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
+import javax.activation.MimetypesFileTypeMap;
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import static talktok.TalkTok.client;
 
@@ -35,6 +44,9 @@ public class MainController implements Initializable {
      */
      @FXML
     private Label labelUserName;
+     
+     @FXML
+    private ImageView userImage;
 
     @FXML
     private Label labelUserDescription;
@@ -174,7 +186,23 @@ public class MainController implements Initializable {
           Platform.exit();
     }
     
-    
+
+    @FXML
+    void mouseClickOnUserImage(MouseEvent event) throws IOException {
+        if(event.getClickCount() == 2 && !event.isConsumed()){
+            event.consume();
+            //fliechooser
+            FileChooser fc = new FileChooser();
+            ExtensionFilter filter = new ExtensionFilter("*.Images", "jpg","gif","png");
+            fc.setSelectedExtensionFilter(filter);
+            File selectedFile = fc.showOpenDialog(null);
+            if(selectedFile != null){
+                Image icon = new Image(new FileInputStream(selectedFile.getAbsolutePath()));
+                userImage.setImage(icon);
+            }else
+                 JOptionPane.showMessageDialog(null, "Nie wybrano zdjęcia");
+        }
+    }
     
     
     
