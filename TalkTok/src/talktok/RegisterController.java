@@ -105,6 +105,7 @@ public class RegisterController implements Initializable {
         String passwordString = passwordTextField.getText();
         String confPasswordString = confirmPasswordTextField.getText();
         if(passwordString.compareTo(confPasswordString) == 0){
+            
             return true;
         }
         else

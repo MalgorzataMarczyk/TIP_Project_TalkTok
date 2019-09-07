@@ -282,9 +282,9 @@ public class Client {
         }
 
         public int Login(String [] userData){ /////najlepiej chyba żeby przyjmował dane w tablicy?
-            ack = 0;
+             ack = 0;
             try {
-                System.out.println("loguje sie");
+                
                 outputStream.writeInt(LOGIN); ///wysyłamy do serwera co chcemy zrobić
                 outputStream.writeObject(userData);
                 
@@ -292,7 +292,7 @@ public class Client {
                 Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
             }
             int i =0;
-            while(ack == 0 && i <5 ){
+            while(ack == 0 && i <50 ){
                 try {
                     sleep(100);
                 } catch (InterruptedException ex) {
@@ -313,7 +313,7 @@ public class Client {
             }
             //Czekanie na ack z serwera
             int i =0;
-            while(ack == 0 && i <5 ){
+            while(ack == 0 && i <50 ){
                 try {
                     sleep(100);
                 } catch (InterruptedException ex) {

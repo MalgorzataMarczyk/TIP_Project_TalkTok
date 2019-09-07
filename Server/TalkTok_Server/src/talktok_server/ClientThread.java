@@ -14,6 +14,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.mindrot.jbcrypt.BCrypt;
 
 public class ClientThread extends Thread {
 
@@ -218,9 +219,13 @@ public class ClientThread extends Thread {
                 boolean userMailCount = selectEmail.getInt("useremail") == 0;
                 if(userCount && userMailCount)
                 {
-                    
+                    ////generowanie salta ldla użytkownika
+                   String salt = BCrypt.gensalt();
+                   ////Hashowanie hasła saltem 
+                   String hashed = BCrypt.hashpw(userData[2], salt);
+                   
                     int rs=stmt.executeUpdate("INSERT INTO users (username, email, password, salt, birthdate, join_date, last_online_date)\n" +
-                "VALUES"+ "('" + userData[0] +"','" + userData[1] +"','"+ userData[2] +"','1','" + userData[3] + "',CURDATE(),CURDATE());");  
+                "VALUES"+ "('" + userData[0] +"','" + userData[1] +"','"+ hashed +"','" + salt + "','" + userData[3] + "',CURDATE(),CURDATE());");  
                     message =1;
                 }
                 else{
@@ -256,13 +261,24 @@ public class ClientThread extends Thread {
             try{
                 Connection con=DriverManager.getConnection( "jdbc:mysql://localhost:3306/tip?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC","root","password");  
                 Statement stmt=con.createStatement();
-                ResultSet qrUserData = stmt.executeQuery("SELECT password AS usPassword FROM users WHERE username = '" + userData[0] + "';");
+                ResultSet qrUserData = stmt.executeQuery("SELECT password, salt FROM users WHERE username = '" + userData[0] + "';");
                 qrUserData.next();
-                int correctPass = qrUserData.getString("usPassword").compareTo(userData[1]);
-                if(correctPass ==0)
-                    message =1;
+                
+                String password = qrUserData.getString("password");
+                String salt = qrUserData.getString("salt");    
+                
+                //hashujemy otrzymane przez użytkownika hasło
+                String hashed = BCrypt.hashpw(userData[1], salt);
+                
+                //porównujemy z tym w bazie
+                if (password.compareTo(hashed)==0){
+                    message =1;}
                 else
                     message=4;
+                    
+                
+                
+                
                 qrUserData = stmt.executeQuery("SELECT username, email, status, description, last_online_date FROM users WHERE username = '" + userData[0] + "';");
                 try{
                 while(qrUserData.next()){
