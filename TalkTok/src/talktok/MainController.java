@@ -62,7 +62,7 @@ public class MainController implements Initializable {
     
     String [] serverData;
     
-    public String userName;
+    public static String userName;
     
     public static boolean calling = false;
    
