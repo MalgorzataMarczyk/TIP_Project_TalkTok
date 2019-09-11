@@ -1,9 +1,20 @@
 package talktok_server;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.io.Reader;
 import java.net.Socket;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.Date;
@@ -12,8 +23,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.scene.image.Image;
 import org.mindrot.jbcrypt.BCrypt;
 
 public class ClientThread extends Thread {
@@ -34,9 +47,13 @@ public class ClientThread extends Thread {
         private final int REGISTER = 9;
         private final int LOGIN = 10;
         private final int UPDATEDATA = 11;
+        private final int UPDATEIMG = 12;
+        private final int SERVERSENTIMG = 97;
 	boolean listening;
 	int id;
         public String[] userDataArray = new String[5];
+        public String [] userData;
+        public File imgFile;
 
 	public ClientThread(Socket socket, int num) {
 		this.socket = socket;
@@ -93,6 +110,8 @@ public class ClientThread extends Thread {
 				}else if (command == UPDATEDATA){
                                     userDataArray = (String []) inputStream.readObject();
                                     UpdateData(userDataArray);
+                                }else if (command == UPDATEIMG){
+                                    UpdateImage((byte[]) inputStream.readObject());
                                 }
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -156,7 +175,6 @@ public class ClientThread extends Thread {
 		}
 	}
 	
-        
         private void muteMic(String destination) {
 		for (ClientThread c : Talktok_Server.clients) {
 			if (c.getHostname().equals(destination)) {
@@ -250,14 +268,13 @@ public class ClientThread extends Thread {
         }
         
         private void readLoginData() throws IOException, ClassNotFoundException{
-            String [] userData;
-            userData = (String[]) inputStream.readObject();
-             
             
+            userData = (String[]) inputStream.readObject();
             //Zwrotny message to cliena. -1 error, 0 - po stronie klienta nie otrzymalem jeszcze odpowiedzi
             //1 - wszytko ok, 4 - błedne hasło
             int message=-1;
-            Class.forName("com.mysql.jdbc.Driver");  
+            Class.forName("com.mysql.jdbc.Driver");
+            byte[] Imagebuffer = null; 
             try{
                 Connection con=DriverManager.getConnection( "jdbc:mysql://localhost:3306/tip?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC","root","password");  
                 Statement stmt=con.createStatement();
@@ -275,17 +292,13 @@ public class ClientThread extends Thread {
                     message =1;}
                 else
                     message=4;
-                    
-                
-                
-                
                 qrUserData = stmt.executeQuery("SELECT username, email, status, description, last_online_date FROM users WHERE username = '" + userData[0] + "';");
+                
                 try{
                 while(qrUserData.next()){
                     String un = qrUserData.getString("username");
                     String ue = qrUserData.getString("email");
                     String ust = qrUserData.getString("status");
-                    //Blob uph = qrUserData.getBlob("photo");
                     String udes = qrUserData.getString("description");
                     Date udt = qrUserData.getDate("last_online_date");
                     userDataArray[0] = un;
@@ -295,6 +308,19 @@ public class ClientThread extends Thread {
                     userDataArray[4] = udt.toString();
                 }
                
+                ResultSet resultImg = stmt.executeQuery("SELECT photo FROM users WHERE username = '" + userData[0] + "';");
+                InputStream imageStream = null;
+                while(resultImg.next())
+                {
+                    imageStream = resultImg.getBinaryStream(1);
+                }
+                if(imageStream != null)
+                {
+                    Imagebuffer = new byte[imageStream.available()];
+                    imageStream.read(Imagebuffer);
+                }
+
+                        
                 }catch (SQLException e ) {
                 
                 }finally {
@@ -308,12 +334,18 @@ public class ClientThread extends Thread {
             outputStream.writeInt(99);
             outputStream.writeObject(message);
             
-            for(String data : userDataArray){
-            System.out.println(data);
-        }
+//            for(String data : userDataArray){
+//            System.out.println(data);
+//        }
             
             outputStream.writeInt(98);
             outputStream.writeObject(userDataArray);
+            
+            if(Imagebuffer != null){
+                outputStream.writeInt(97);
+                outputStream.writeObject(Imagebuffer); 
+            }
+            
             
         }
         
@@ -330,6 +362,23 @@ public class ClientThread extends Thread {
                 int status = Integer.parseInt(updateData[2]);
                 update.setInt(1,status);
                 update.setString(2, updateData[3]);
+                update.executeUpdate();
+                update.close();
+                con.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(ClientThread.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
+        public void UpdateImage(byte[] ImageByte) throws ClassNotFoundException, FileNotFoundException{
+            Class.forName("com.mysql.jdbc.Driver");  
+           // FileInputStream inputStream = new FileInputStream(imageFile);
+            try{
+                Connection con=DriverManager.getConnection( "jdbc:mysql://localhost:3306/tip?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC","root","password");  
+                Statement stmt=con.createStatement();
+                //System.out.println(userData[0]);
+                PreparedStatement update = con.prepareStatement("UPDATE users SET photo = ? WHERE username = '" + userData[0] + "';");
+                update.setBytes(1, ImageByte);
                 update.executeUpdate();
                 update.close();
                 con.close();

@@ -1,5 +1,6 @@
 package talktok;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -11,6 +12,7 @@ import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 public class Client {
@@ -23,6 +25,7 @@ public class Client {
 	private ObjectInputStream inputStream;
         private int ack;
         public String [] serverData;
+        public byte [] imageByte;
 
 	/* Integer commands for communication with the server. */
 	private final int CONNECT = 0;
@@ -37,8 +40,10 @@ public class Client {
     private final int REGISTER = 9;
      private final int LOGIN = 10;
      private final int UPDATEDATA = 11;
+     private final int UPDATEIMG = 12;
      private final int SERVERMESSAGE = 99;
      private final int SERVERDATA = 98;
+     private final int SERVERSENTIMG = 97;
 
 	/* User interface associated with the individual client. */
 	///private static ClientGUI gui;
@@ -227,7 +232,11 @@ public class Client {
                                         }
                                         else if (command == SERVERDATA){
                                             serverData = (String[]) inputStream.readObject();
-                                            
+                                        }
+                                        else if (command == SERVERSENTIMG){
+                                            System.out.print("odbieram");
+                                            imageByte = (byte[]) inputStream.readObject();
+                                            System.out.print("odebral");
                                         }
                                         else{
                                             System.out.println("czytam");
@@ -281,7 +290,7 @@ public class Client {
 		}
         }
 
-        public int Login(String [] userData){ /////najlepiej chyba żeby przyjmował dane w tablicy?
+        public int Login(String [] userData){ 
              ack = 0;
             try {
                 
@@ -335,6 +344,23 @@ public class Client {
             return serverData;
         }
         
+        public Image getServerImage(){
+            int i =0;
+            while(imageByte == null && i < 10){
+                try {
+                    sleep(100);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                i++;
+            }
+            if(imageByte != null)
+            {
+                return new Image(new ByteArrayInputStream(imageByte));
+            }
+            return null;
+        }
+        
         public void UpdateData(String[] updateData){
             try{
                 outputStream.writeInt(UPDATEDATA);
@@ -344,4 +370,14 @@ public class Client {
             }
         }
         
+        public void UpdateImage (byte[] imageArray ){
+            try{
+                
+                outputStream.writeInt(UPDATEIMG);
+                outputStream.writeObject(imageArray);          
+            
+            }catch (IOException ex) {
+                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
 }

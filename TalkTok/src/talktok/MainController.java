@@ -5,9 +5,11 @@
  */
 package talktok;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
@@ -23,6 +25,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.Image;
+import javafx.scene.image.PixelFormat;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
@@ -89,6 +92,10 @@ public class MainController implements Initializable {
         }
         else
             labelUserDescription.setText(serverData[3]);
+        Image icon = client.getServerImage();
+        if(icon != null)
+            userImage.setImage(icon);
+
     }    
 
     @FXML
@@ -197,14 +204,13 @@ public class MainController implements Initializable {
             fc.setSelectedExtensionFilter(filter);
             File selectedFile = fc.showOpenDialog(null);
             if(selectedFile != null){
-                Image icon = new Image(new FileInputStream(selectedFile.getAbsolutePath()));
-                userImage.setImage(icon);
+                InputStream in = new FileInputStream(selectedFile.getAbsolutePath());
+                byte[] abyte = new byte[in.available()];
+                in.read(abyte);
+                userImage.setImage(new Image(new ByteArrayInputStream(abyte)));
+                client.UpdateImage(abyte);
             }else
                  JOptionPane.showMessageDialog(null, "Nie wybrano zdjęcia");
         }
     }
-    
-    
-    
-    
 }
