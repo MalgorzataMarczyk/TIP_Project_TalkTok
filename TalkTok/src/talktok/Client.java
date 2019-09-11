@@ -370,6 +370,7 @@ public class Client {
             }
         }
         
+
         public void UpdateImage (byte[] imageArray ){
             try{
                 
@@ -380,4 +381,28 @@ public class Client {
                 Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+
+        
+        public int ContactSendData(String [] userData){
+            ack = 0;
+            
+            try {
+                outputStream.writeInt(ADD_FRIEND);
+                outputStream.writeObject(userData);
+            } catch (IOException ex) {
+                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            //Czekanie na ack z serwera
+            int i =0;
+            while(ack == 0 && i <50 ){
+                try {
+                    sleep(100);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                i++;                
+            }          
+            return ack;
+        }
+
 }

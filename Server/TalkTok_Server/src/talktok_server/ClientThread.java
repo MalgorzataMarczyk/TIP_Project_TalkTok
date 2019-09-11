@@ -85,7 +85,8 @@ public class ClientThread extends Thread {
 					listening = false;
 					break;
 				} else if (command == ADD_FRIEND) {
-					/* */
+                                      String [] updateData = (String[]) inputStream.readObject();
+					AddContact(updateData);
 				} else if (command == CALL) {
                                 
 					String destination = (String) inputStream.readObject();
@@ -369,13 +370,13 @@ public class ClientThread extends Thread {
                 Logger.getLogger(ClientThread.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        
-        public void UpdateImage(byte[] ImageByte) throws ClassNotFoundException, FileNotFoundException{
-            Class.forName("com.mysql.jdbc.Driver");  
-           // FileInputStream inputStream = new FileInputStream(imageFile);
-            try{
-                Connection con=DriverManager.getConnection( "jdbc:mysql://localhost:3306/tip?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC","root","password");  
-                Statement stmt=con.createStatement();
+
+        public void UpdateImage(byte[] ImageByte) throws ClassNotFoundException, FileNotFoundException {
+            Class.forName("com.mysql.jdbc.Driver");
+            // FileInputStream inputStream = new FileInputStream(imageFile);
+            try {
+                Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/tip?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC", "root", "password");
+                Statement stmt = con.createStatement();
                 //System.out.println(userData[0]);
                 PreparedStatement update = con.prepareStatement("UPDATE users SET photo = ? WHERE username = '" + userData[0] + "';");
                 update.setBytes(1, ImageByte);
@@ -386,4 +387,59 @@ public class ClientThread extends Thread {
                 Logger.getLogger(ClientThread.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+
+        ////[0] - dodający, [1] - dodawany, [2] - alias
+        //// message 1 - sukces, message 2 - użytkownik nie istnieje, message 3 - już masz go w znajomych
+        public void AddContact(String[] updateData) throws ClassNotFoundException{
+            
+           
+             int message=-1;
+            Class.forName("com.mysql.jdbc.Driver");  
+            try{
+                 Connection con=DriverManager.getConnection( "jdbc:mysql://localhost:3306/tip?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC","root","password");  
+               
+                 System.out.println(updateData[0]+ " - " +  updateData[1] + " - " +  updateData[2]);
+                 
+                 
+                 Statement stmt=con.createStatement();
+                //Sprawdzanie czy dany uzytkownik istnieje w bazie //
+                ResultSet selectUser = stmt.executeQuery("SELECT COUNT(username) AS usercount FROM users WHERE username = '" + updateData[1] + "';");
+                selectUser.next();
+                boolean UserExists = selectUser.getInt("usercount") > 0;  ///true jeśli istnieje użytkownik ktorego chcemy dodać
+                
+                //Sprawdzanie czy użytkownika mamy już na swojej liscie kontaktów //
+                ResultSet selectContact = stmt.executeQuery("SELECT COUNT(friend_id) AS contactcount FROM contact_list WHERE friend_id = (Select user_id from users where username='"+ updateData[1] +"') and owner_id = (Select user_id from users where username='"+updateData[0]+"');");
+                selectContact.next();
+                boolean ContactExists = selectContact.getInt("contactcount") > 0; ///true jeśli mamy juz taki kontakt na liście
+                
+                if(UserExists && !ContactExists) ///istnieje użytkownik i nie mamy go w kontaktach
+                {
+                   
+                    int rs=stmt.executeUpdate("insert into contact_list(owner_id, friend_id, alias) values((Select user_id from users where username='"+updateData[0]+"'),(Select user_id from users where username='"+ updateData[1] +"'),'"+ updateData[2] +"');");  
+                    message =1; ///sukces
+                }
+                else{
+                    if(!UserExists)
+                        message = 2;
+                    else
+                        message = 3;
+                }
+                System.out.println("contacs: " + message);
+
+                con.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(ClientThread.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+            
+            try {
+                outputStream.writeInt(99);
+                outputStream.writeObject(message);
+            } catch (IOException ex) {
+                Logger.getLogger(ClientThread.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+            
+        }
+
 }
