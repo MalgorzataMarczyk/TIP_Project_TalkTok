@@ -11,6 +11,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.LinkedHashSet;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -62,6 +63,9 @@ public class MainController implements Initializable {
     @FXML
     private Label labelUserDescription;
     
+    @FXML
+    private Label labelFriends;
+    
       @FXML
     private TextField textUserDescription;
 
@@ -86,6 +90,8 @@ public class MainController implements Initializable {
    
     public static volatile boolean Exit = false;
    
+    public static LinkedHashSet <Contact> ContactList = new LinkedHashSet<Contact>(); ////Contact, username
+    
     public void uploadDataFromServer(){
         serverData = client.getServerData();
     }
@@ -93,6 +99,7 @@ public class MainController implements Initializable {
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        
         textUserDescription.setVisible(false);
         okDesButton.setVisible(false);
         uploadDataFromServer();
@@ -111,24 +118,23 @@ public class MainController implements Initializable {
         if(icon != null)
             userImage.setImage(icon);
 
+        //////////dodawanie zawartości z serwera
+        ContactList = client.ContactList;
         
+        System.out.println(ContactList.size());
+        //////jeśli lista kontaktow nie jest pusta labelFriends.setVisible(false);
+        if (!ContactList.isEmpty()){labelFriends.setVisible(false);}
         
-        //////asasa
-       
           ObservableList<Contact> ContactObservableList;
        
         ContactObservableList = FXCollections.observableArrayList();
         
-        ContactObservableList.addAll(
-        new Contact("kasia","kasia",1),
-        new Contact("ka1","ewa",0),
-        new Contact("ka2a","karolina",1),
-        new Contact("ka3a","asia",0),
-        new Contact("1a","ania",1)
-        );
+        ContactObservableList.addAll(ContactList);
         
+        
+        lv.getItems().clear();
         lv.setItems(ContactObservableList);
-        
+       
         
         lv.setCellFactory(new Callback<ListView<Contact>, ListCell<Contact>>() {
              @Override
@@ -137,15 +143,6 @@ public class MainController implements Initializable {
             }
             });
         
-        
-        
-       /*  lv.setCellFactory(new Callback<ListView<String>, ListCell<String>>() {
-            @Override
-            public ListCell<String> call(ListView<String> param) {
-                return new XCell();
-            }
-        });*/
-       // PaneContacs.getChildren().add(lv);
         
         
         
@@ -220,25 +217,7 @@ public class MainController implements Initializable {
         client.UpdateData(serverData);
     }
     
-    @FXML
-    private void MakeCallButtonAction(ActionEvent event) {
-           try {
-        FXMLLoader fxmlLoader = new FXMLLoader();
-        fxmlLoader.setLocation(getClass().getResource("xml/calling.fxml"));
-        Scene scene = new Scene(fxmlLoader.load());
-        Stage stage = new Stage();
-         ///stage.initStyle(StageStyle.UNDECORATED);
-        stage.setScene(scene);
-        stage.show();
-        //////////////////////////////////
-               
-        
-       
-        
-    } catch (IOException e) {
-       
-    }
-    }
+    
     
     @FXML
     private void quitButtonAction(ActionEvent event) {
@@ -272,22 +251,60 @@ public class MainController implements Initializable {
      static class XCell extends ListCell<Contact> {
         HBox hbox = new HBox();
        
-        Label FXusername = new Label();
+        Label FXopis = new Label();
         Label FXalias = new Label();
         Label FXstatus = new Label();
         Pane pane = new Pane();
-        Button buttonC = new Button("Call"); ///zadzwoń
-        Button buttonR = new Button("Bye"); ///usun ze znajomych
+        Button buttonC = new Button(); ///zadzwoń
+        Button buttonR = new Button(); ///usun ze znajomych
         Contact lastItem;
 
         public XCell() {
             super();
-            hbox.getChildren().addAll(FXalias,FXstatus, pane, buttonC,buttonR);
+            buttonC.setId("call");
+            buttonR.setId("remove");
+            
+            Platform.runLater(() -> {
+    InputStream input = getClass().getResourceAsStream("images/call-icon.png");
+    //set the size for image
+    Image image = new Image(input, 18, 18, true, true);
+    ImageView imageView = new ImageView(image);            
+    buttonC.setGraphic(imageView);
+});
+            
+            Platform.runLater(() -> {
+    InputStream input = getClass().getResourceAsStream("images/remove.png");
+    //set the size for image
+    Image image = new Image(input, 18, 18, true, true);
+    ImageView imageView = new ImageView(image);            
+    buttonR.setGraphic(imageView);
+});
+            
+            
+            hbox.getChildren().addAll(FXalias,FXstatus,FXopis, pane, buttonC,buttonR);
             HBox.setHgrow(pane, Priority.ALWAYS);
             buttonC.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent event) {
                     System.out.println(lastItem.getUsername() + " : " + event);
+                    
+                    
+                         try {
+        FXMLLoader fxmlLoader = new FXMLLoader();
+        fxmlLoader.setLocation(getClass().getResource("xml/calling.fxml"));
+        Scene scene = new Scene(fxmlLoader.load());
+        Stage stage = new Stage();
+         ///stage.initStyle(StageStyle.UNDECORATED);
+        stage.setScene(scene);
+        stage.show();
+        
+            } catch (IOException e) {
+       
+                                    }
+                    
+                    
+                    
+                   
                 }
             });
             
@@ -313,7 +330,7 @@ public class MainController implements Initializable {
                  
                 FXstatus.setText(String.valueOf(lastItem.getStatus()));
                 FXalias.setText(lastItem.getAlias());
-                
+                FXopis.setText(lastItem.getOpis());
                 setGraphic(hbox);
             }
         }

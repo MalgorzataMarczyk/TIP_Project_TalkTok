@@ -39,7 +39,7 @@ public class HistoryController implements Initializable {
          
        Parent MainParent = FXMLLoader.load(getClass().getResource("xml/main.fxml"));
        Scene sceneMain = new Scene(MainParent);
-     
+       sceneMain.getStylesheets().add(getClass().getResource("css/main.css").toExternalForm());
        Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
        
        

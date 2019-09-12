@@ -24,6 +24,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.scene.image.Image;
@@ -271,6 +272,7 @@ public class ClientThread extends Thread {
         private void readLoginData() throws IOException, ClassNotFoundException{
             
             userData = (String[]) inputStream.readObject();
+            String TrueUsername = userData[0];
             //Zwrotny message to cliena. -1 error, 0 - po stronie klienta nie otrzymalem jeszcze odpowiedzi
             //1 - wszytko ok, 4 - błedne hasło
             int message=-1;
@@ -341,6 +343,33 @@ public class ClientThread extends Thread {
             
             outputStream.writeInt(98);
             outputStream.writeObject(userDataArray);
+            
+                
+            try{
+            ////////////ściągamy z bazy w pętli kontakty
+            Connection con=DriverManager.getConnection( "jdbc:mysql://localhost:3306/tip?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC","root","password");  
+                Statement stmt=con.createStatement();
+             ResultSet resultContact = stmt.executeQuery("SELECT username, alias, photo, description, status FROM contact_list cl join users u on cl.owner_id=u.user_id where username = '" + TrueUsername + "';");
+                
+                 outputStream.writeInt(96);
+                while(resultContact.next())
+                {
+                   String [] ContactDataArray = new String[4];
+               ContactDataArray[0] = resultContact.getString("username");
+               ContactDataArray[1] = resultContact.getString("alias");
+               ContactDataArray[2] = resultContact.getString("description");
+               ContactDataArray[3] = resultContact.getString("status");
+               System.out.println(ContactDataArray[0]);
+               outputStream.writeObject(ContactDataArray);
+                }
+            
+            
+            
+
+            
+            con.close();
+            }catch(Exception e){Logger.getLogger(ClientThread.class.getName()).log(Level.SEVERE, null, e);  }
+            
             
             if(Imagebuffer != null){
                 outputStream.writeInt(97);

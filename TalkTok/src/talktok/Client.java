@@ -1,12 +1,16 @@
 package talktok;
 
 import java.io.ByteArrayInputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import static java.lang.Thread.sleep;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.util.LinkedHashSet;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
@@ -14,6 +18,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import static talktok.MainController.ContactList;
 
 public class Client {
 
@@ -44,7 +49,9 @@ public class Client {
      private final int SERVERMESSAGE = 99;
      private final int SERVERDATA = 98;
      private final int SERVERSENTIMG = 97;
+      private final int SERVERSENCONTACTS = 96;
 
+      LinkedHashSet <Contact> ContactList = new LinkedHashSet<Contact>();
 	/* User interface associated with the individual client. */
 	///private static ClientGUI gui;
 
@@ -232,11 +239,39 @@ public class Client {
                                         }
                                         else if (command == SERVERDATA){
                                             serverData = (String[]) inputStream.readObject();
+                                           
+                                            
                                         }
                                         else if (command == SERVERSENTIMG){
                                             System.out.print("odbieram");
                                             imageByte = (byte[]) inputStream.readObject();
                                             System.out.print("odebral");
+                                           
+                                             
+                                            
+                                        } else if(command==SERVERSENCONTACTS){
+                                            String [] ContactDataArray = new String[4];
+                                            
+                                            
+                                            
+                                          try
+                                                   {
+                                                for (;;)
+                                                   {
+                                                         ContactDataArray =  (String []) inputStream.readObject();
+                                                          ContactList.add( new Contact(ContactDataArray[0],ContactDataArray[1],ContactDataArray[2],ContactDataArray[3]));
+                                                            }
+                                                             }
+                                                          catch (SocketTimeoutException exc)
+                                                             {
+                                                                        // you got the timeout
+                                                           }
+                                                          catch (EOFException exc)
+                                                          {
+                                                             System.out.println("koniec " + ContactDataArray[0]);
+                                                            }
+                                            
+                                            
                                         }
                                         else{
                                             System.out.println("czytam");

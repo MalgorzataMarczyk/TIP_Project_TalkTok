@@ -5,13 +5,15 @@
  */
 package talktok;
 
+import java.io.Serializable;
+
 /**
  *
  * @author Lena
  */
-public class Contact {
+public class Contact  implements Serializable {
 
-    public int getStatus() {
+    public String getStatus() {
        return status;
     }
 
@@ -25,13 +27,19 @@ public class Contact {
      
     String alias;
     String username;
+    String opis;
     ////image ale nie wiem jak 
-    int status; ////0-offline, 1-online?
+    String status; ////0-offline, 1-online?
     
-    Contact(String username, String alias, int status){
+    Contact(String username, String alias, String opis, String status){
     this.alias = alias;
     this.username = username;
+    this.opis = opis;
     this.status=status;
+    }
+
+    public String getOpis() {
+        return opis;
     }
     
    
