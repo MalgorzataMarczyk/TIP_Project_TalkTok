@@ -349,7 +349,7 @@ public class ClientThread extends Thread {
             ////////////ściągamy z bazy w pętli kontakty
             Connection con=DriverManager.getConnection( "jdbc:mysql://localhost:3306/tip?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC","root","password");  
                 Statement stmt=con.createStatement();
-             ResultSet resultContact = stmt.executeQuery("SELECT username, alias, photo, description, status FROM contact_list cl join users u on cl.owner_id=u.user_id where username = '" + TrueUsername + "';");
+             ResultSet resultContact = stmt.executeQuery("SELECT username, alias, photo, description, status FROM contact_list cl join users u on cl.friend_id=u.user_id where cl.owner_id = (select user_id from users where username = '" + TrueUsername + "');");
                 
                  outputStream.writeInt(96);
                 while(resultContact.next())
