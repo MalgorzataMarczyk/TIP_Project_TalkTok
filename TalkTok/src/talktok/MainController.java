@@ -13,7 +13,10 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -22,14 +25,19 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.Image;
-import javafx.scene.image.PixelFormat;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 import javax.activation.MimetypesFileTypeMap;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
@@ -62,6 +70,13 @@ public class MainController implements Initializable {
     
     @FXML
     private Button buttonLabelDesButton;
+        
+    @FXML
+    private Pane PaneContacs;
+    
+   
+     @FXML
+          ListView<Contact> lv; ///////listview
     
     String [] serverData;
     
@@ -96,6 +111,44 @@ public class MainController implements Initializable {
         if(icon != null)
             userImage.setImage(icon);
 
+        
+        
+        //////asasa
+       
+          ObservableList<Contact> ContactObservableList;
+       
+        ContactObservableList = FXCollections.observableArrayList();
+        
+        ContactObservableList.addAll(
+        new Contact("kasia","kasia",1),
+        new Contact("ka1","ewa",0),
+        new Contact("ka2a","karolina",1),
+        new Contact("ka3a","asia",0),
+        new Contact("1a","ania",1)
+        );
+        
+        lv.setItems(ContactObservableList);
+        
+        
+        lv.setCellFactory(new Callback<ListView<Contact>, ListCell<Contact>>() {
+             @Override
+            public ListCell<Contact> call(ListView<Contact> param) {
+        return new XCell();
+            }
+            });
+        
+        
+        
+       /*  lv.setCellFactory(new Callback<ListView<String>, ListCell<String>>() {
+            @Override
+            public ListCell<String> call(ListView<String> param) {
+                return new XCell();
+            }
+        });*/
+       // PaneContacs.getChildren().add(lv);
+        
+        
+        
     }    
 
     @FXML
@@ -213,4 +266,58 @@ public class MainController implements Initializable {
                  JOptionPane.showMessageDialog(null, "Nie wybrano zdjęcia");
         }
     }
+    
+    
+    ///////////noideawhatimdoing
+     static class XCell extends ListCell<Contact> {
+        HBox hbox = new HBox();
+       
+        Label FXusername = new Label();
+        Label FXalias = new Label();
+        Label FXstatus = new Label();
+        Pane pane = new Pane();
+        Button buttonC = new Button("Call"); ///zadzwoń
+        Button buttonR = new Button("Bye"); ///usun ze znajomych
+        Contact lastItem;
+
+        public XCell() {
+            super();
+            hbox.getChildren().addAll(FXalias,FXstatus, pane, buttonC,buttonR);
+            HBox.setHgrow(pane, Priority.ALWAYS);
+            buttonC.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    System.out.println(lastItem.getUsername() + " : " + event);
+                }
+            });
+            
+            buttonR.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    System.out.println(lastItem.getUsername() + " : " + event);
+                }
+            });
+            
+        }
+
+        @Override
+        protected void updateItem(Contact item, boolean empty) {
+            super.updateItem(item, empty);
+            setText(null);  // No text in label of super class
+            if (empty || item == null ) {
+                lastItem = null;
+                setGraphic(null);
+            } else {
+                lastItem = item;
+                ///label.setText(item!=null ? item : "<null>");
+                 
+                FXstatus.setText(String.valueOf(lastItem.getStatus()));
+                FXalias.setText(lastItem.getAlias());
+                
+                setGraphic(hbox);
+            }
+        }
+    }
+    
+    
 }
