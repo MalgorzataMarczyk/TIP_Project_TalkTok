@@ -42,6 +42,7 @@ import javafx.util.Callback;
 import javax.activation.MimetypesFileTypeMap;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
+import static talktok.HistoryController.StoryList;
 import static talktok.TalkTok.client;
 
 /**
@@ -143,7 +144,7 @@ public class MainController implements Initializable {
             }
             });
         
-        
+        StoryList = client.HistoryList;
         
         
     }    

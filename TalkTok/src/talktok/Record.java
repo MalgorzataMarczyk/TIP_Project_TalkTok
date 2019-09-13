@@ -13,20 +13,29 @@ public class Record {
     
     
     
-     public String getCaller() {   ///z racji ze to sie w sumie i tak nie wyswietla to mozna trzymac userID a nie username? nie wiem co lepsze
+     public String getCaller() {   
         return caller;
     }  
-     
+      public String getAnswer() {   
+        return answer;
+    }  
+       public String getTime() {   
+           return time;
+    }  
+        public String getDate() {   
+        return date;
+    }  
     
     String caller;
     String answer;
-    ////data
-    String time; ////0-offline, 1-online?
+    String time; 
+    String date;
     
-    Record(String caller, String answer, String time){
+    Record(String caller, String answer, String time, String date){
     this.caller = caller;
     this.answer = answer;
     this.time=time;
+    this.date=date;
     }
     
     

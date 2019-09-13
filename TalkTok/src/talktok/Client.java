@@ -50,8 +50,10 @@ public class Client {
      private final int SERVERDATA = 98;
      private final int SERVERSENTIMG = 97;
       private final int SERVERSENCONTACTS = 96;
+      private final int GETHISTORY = 13;
 
       LinkedHashSet <Contact> ContactList = new LinkedHashSet<Contact>();
+      LinkedHashSet <Record> HistoryList = new LinkedHashSet<Record>();
 	/* User interface associated with the individual client. */
 	///private static ClientGUI gui;
 
@@ -181,7 +183,30 @@ public class Client {
 					} else if (command == ADD_FRIEND) {
 						//String message = (String) inputStream.readObject();
 						//System.out.println(message);
-					} 
+					} else if(command == GETHISTORY){
+                                        
+                                            String [] RecordDataArray = new String[4];
+                                            
+                                            
+                                            
+                                          try
+                                                   {
+                                                for (;;)
+                                                   {
+                                                         RecordDataArray =  (String []) inputStream.readObject();
+                                                          HistoryList.add( new Record(RecordDataArray[0],RecordDataArray[1],RecordDataArray[2],RecordDataArray[3]));
+                                                            }
+                                                             }
+                                                          catch (SocketTimeoutException exc)
+                                                             {
+                                                                        // you got the timeout
+                                                           }
+                                                          catch (EOFException exc)
+                                                          {
+                                                             System.out.println("koniec " + RecordDataArray[0]);
+                                                            }
+                                            
+                                        }
                                         else if (command == CALL) {
 						String sender = (String) inputStream.readObject();
 						inCallWith = sender;
@@ -251,8 +276,6 @@ public class Client {
                                             
                                         } else if(command==SERVERSENCONTACTS){
                                             String [] ContactDataArray = new String[4];
-                                            
-                                            
                                             
                                           try
                                                    {
@@ -379,6 +402,8 @@ public class Client {
             return serverData;
         }
         
+       
+        
         public Image getServerImage(){
             int i =0;
             while(imageByte == null && i < 10){
@@ -440,4 +465,30 @@ public class Client {
             return ack;
         }
 
+         public int HistorytSendData(String [] userData){
+            ack = 0;
+            
+            try {
+                outputStream.writeInt(13);
+                outputStream.writeObject(userData);
+            } catch (IOException ex) {
+                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            //Czekanie na ack z serwera
+            int i =0;
+            while(ack == 0 && i <50 ){
+                try {
+                    sleep(100);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                i++;                
+            }          
+            return ack;
+        
+            
+        }
+        
+        
+        
 }

@@ -23,6 +23,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.logging.Level;
@@ -50,12 +52,14 @@ public class ClientThread extends Thread {
         private final int UPDATEDATA = 11;
         private final int UPDATEIMG = 12;
         private final int SERVERSENTIMG = 97;
+        private final int SENDHISTORY=13;
 	boolean listening;
 	int id;
         public String[] userDataArray = new String[5];
         public String [] userData;
         public File imgFile;
-
+        public String TrueUsername = null;
+        
 	public ClientThread(Socket socket, int num) {
 		this.socket = socket;
 		try {
@@ -114,6 +118,8 @@ public class ClientThread extends Thread {
                                     UpdateData(userDataArray);
                                 }else if (command == UPDATEIMG){
                                     UpdateImage((byte[]) inputStream.readObject());
+                                } else if(command == SENDHISTORY){
+                                    sendHistoryData();
                                 }
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -272,7 +278,7 @@ public class ClientThread extends Thread {
         private void readLoginData() throws IOException, ClassNotFoundException{
             
             userData = (String[]) inputStream.readObject();
-            String TrueUsername = userData[0];
+             TrueUsername = userData[0];
             //Zwrotny message to cliena. -1 error, 0 - po stronie klienta nie otrzymalem jeszcze odpowiedzi
             //1 - wszytko ok, 4 - błedne hasło
             int message=-1;
@@ -345,7 +351,8 @@ public class ClientThread extends Thread {
             outputStream.writeObject(userDataArray);
             
                 
-            try{
+           
+         try{
             ////////////ściągamy z bazy w pętli kontakty
             Connection con=DriverManager.getConnection( "jdbc:mysql://localhost:3306/tip?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC","root","password");  
                 Statement stmt=con.createStatement();
@@ -354,13 +361,13 @@ public class ClientThread extends Thread {
                  outputStream.writeInt(96);
                 while(resultContact.next())
                 {
-                   String [] ContactDataArray = new String[4];
-               ContactDataArray[0] = resultContact.getString("username");
-               ContactDataArray[1] = resultContact.getString("alias");
-               ContactDataArray[2] = resultContact.getString("description");
-               ContactDataArray[3] = resultContact.getString("status");
-               System.out.println(ContactDataArray[0]);
-               outputStream.writeObject(ContactDataArray);
+                   String [] HistoryDataArray = new String[4];
+               HistoryDataArray[0] = resultContact.getString("username");
+               HistoryDataArray[1] = resultContact.getString("alias");
+               HistoryDataArray[2] = resultContact.getString("description");
+               HistoryDataArray[3] = resultContact.getString("status");
+               System.out.println(HistoryDataArray[0]);
+               outputStream.writeObject(HistoryDataArray);
                 }
             
             
@@ -376,6 +383,7 @@ public class ClientThread extends Thread {
                 outputStream.writeObject(Imagebuffer); 
             }
             
+            sendHistoryData();
             
         }
         
@@ -470,5 +478,81 @@ public class ClientThread extends Thread {
             
             
         }
+
+    private void sendHistoryData() {
+        
+        try{
+            ////////////ściągamy z bazy w pętli kontakty
+            Connection con=DriverManager.getConnection( "jdbc:mysql://localhost:3306/tip?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC","root","password");  
+             Statement stmt=con.createStatement();
+             Statement stmt2=con.createStatement();
+             
+             ResultSet resultMyId = stmt.executeQuery("select user_id from users where username='" + TrueUsername + "';");
+              String myId =null;
+             if (resultMyId.next()) {
+             myId = resultMyId.getString("user_id"); ///id użytkownika 
+             }
+             
+             ResultSet resultHistory = stmt.executeQuery("select caller_id, receiver_id, time_start, time_end from call_history where (select user_id from users where username= '" + TrueUsername + "')=receiver_id or (select user_id from users where username='" + TrueUsername + "')=caller_id order by time_end DESC;");
+             
+             
+            
+                 outputStream.writeInt(13);
+                while(resultHistory.next())
+                {
+                   String [] ContactDataArray = new String[4];
+                   String caller = resultHistory.getString("caller_id");
+                   String receiver = resultHistory.getString("receiver_id");
+                   String time_start = resultHistory.getString("time_start");
+                   String time_end = resultHistory.getString("time_end");
+                   
+                   
+                   if(caller.equals(myId))///ja dzwoniłam do kogoś
+                   {caller="Ja";
+                   ResultSet resultFriendId = stmt2.executeQuery("select alias from users u join contact_list cl on cl.friend_id=u.user_id where cl.owner_id='" + myId + "' and friend_id='" + receiver + "';");
+                   if (resultFriendId.next()) {
+                   receiver = resultFriendId.getString("alias");}
+                   
+                    } else if(receiver.equals(myId)){ ////ktoś dzwonił do mnie
+                   receiver="Ja";
+                   ResultSet resultFriendId2 = stmt2.executeQuery("select alias from users u join contact_list cl on cl.friend_id=u.user_id where cl.owner_id='" + myId + "' and friend_id='" + caller + "';");
+                   if (resultFriendId2.next()) {
+                   caller = resultFriendId2.getString("alias");
+                   }
+                   
+                   }
+                   
+                String data = time_start.substring(0, 10);
+                
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+                LocalDateTime dateTime1= LocalDateTime.parse(time_start, formatter);
+                LocalDateTime dateTime2= LocalDateTime.parse(time_end, formatter);
+                long diffInSeconds = java.time.Duration.between(dateTime1, dateTime2).getSeconds();
+                
+                long hours = diffInSeconds / 3600;
+                long minutes = (diffInSeconds % 3600) / 60;
+                long seconds = diffInSeconds % 60;
+                String time = (hours + ":"+minutes + ":"+seconds);
+                System.out.println(time + " <- czas data -> " + data);
+                
+               ContactDataArray[0] = caller;
+               ContactDataArray[1] = receiver;
+               ContactDataArray[2] = data;
+               ContactDataArray[3] = time;
+               System.out.println(ContactDataArray[0]+"_" +ContactDataArray[1]+"_" +ContactDataArray[2]+"_" + ContactDataArray[3]);
+               outputStream.writeObject(ContactDataArray);
+                }
+            
+            
+            
+
+            
+            con.close();
+            }catch(Exception e){Logger.getLogger(ClientThread.class.getName()).log(Level.SEVERE, null, e);  }
+        
+        
+        
+    }
 
 }
