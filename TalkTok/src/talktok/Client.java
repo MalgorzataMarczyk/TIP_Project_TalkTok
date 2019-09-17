@@ -18,6 +18,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import static talktok.MainController.ContactList;
 
 public class Client {
@@ -46,11 +47,16 @@ public class Client {
      private final int LOGIN = 10;
      private final int UPDATEDATA = 11;
      private final int UPDATEIMG = 12;
+     private final int GETHISTORY = 13;
+     private static final int ASK_IP = 14;
+     private static final int GET_IP = 15;
+     private static final int CALL_INFORM = 16;
+     private static final int GET_USER_IP_BY_NAME = 17;
      private final int SERVERMESSAGE = 99;
      private final int SERVERDATA = 98;
      private final int SERVERSENTIMG = 97;
       private final int SERVERSENCONTACTS = 96;
-      private final int GETHISTORY = 13;
+      
 
       LinkedHashSet <Contact> ContactList = new LinkedHashSet<Contact>();
       LinkedHashSet <Record> HistoryList = new LinkedHashSet<Record>();
@@ -63,6 +69,9 @@ public class Client {
 	 */
 	private ListenerThread listener;
 	private boolean listening = true;
+        
+        private String callUserIP;
+        public String callingIP;
 
 	/* Variables related to a voice call that is being made. */
 	Call call;
@@ -73,7 +82,7 @@ public class Client {
 	 * parameters
 	 */
 	public Client(String hostname, int portNumber) {
-		this.hostname = "127.0.0.1";///hostname; <- adres serwera
+		this.hostname = hostname; //<- adres serwera
 		this.portNumber = portNumber;  ////port serwera
 	}
 
@@ -295,6 +304,27 @@ public class Client {
                                                             }
                                             
                                             
+                                        }else if(command == GET_IP){
+                                            callUserIP = (String)inputStream.readObject();    
+                                        }else if(command == CALL_INFORM){
+                                            callingIP = (String) inputStream.readObject();
+                                            System.out.println("Calling FROM IP: " + callingIP);
+                                            Platform.runLater(()->{
+                                                try {
+                                                    System.out.print("Ktos Dzwoni");
+                                                    FXMLLoader fxmlLoader = new FXMLLoader();
+                                                    fxmlLoader.setLocation(getClass().getResource("xml/calling.fxml"));
+                                                    
+                                                    Scene scene = new Scene(fxmlLoader.load());
+                                                    
+                                                    Stage stage = new Stage();
+                                                    //stage.initStyle(StageStyle.UNDECORATED);
+                                                    stage.setScene(scene);
+                                                    stage.show();
+                                                } catch (IOException ex) {
+                                                    Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+                                                }
+});
                                         }
                                         else{
                                             System.out.println("czytam");
@@ -402,7 +432,20 @@ public class Client {
             return serverData;
         }
         
-       
+        public void askServerForIP(String callUserName) throws IOException{
+            outputStream.writeInt(ASK_IP);
+            outputStream.writeObject(callUserName);
+            
+        }
+        
+        public void sendMyNameToServer(String myName) throws IOException{
+            outputStream.writeInt(GET_USER_IP_BY_NAME);
+            outputStream.writeObject(myName);
+        }
+        
+        public String getCallUserIP (){
+            return callUserIP;
+        }
         
         public Image getServerImage(){
             int i =0;
@@ -429,7 +472,6 @@ public class Client {
                 Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        
 
         public void UpdateImage (byte[] imageArray ){
             try{
@@ -441,7 +483,6 @@ public class Client {
                 Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-
         
         public int ContactSendData(String [] userData){
             ack = 0;
@@ -465,7 +506,7 @@ public class Client {
             return ack;
         }
 
-         public int HistorytSendData(String [] userData){
+        public int HistorytSendData(String [] userData){
             ack = 0;
             
             try {

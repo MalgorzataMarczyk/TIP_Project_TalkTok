@@ -16,7 +16,6 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.media.AudioClip;
-import static javafx.scene.media.AudioClip.INDEFINITE;
 import javafx.stage.Stage;
 import static talktok.TalkTok.client;
 
@@ -60,8 +59,9 @@ URL path;
        
         window.setScene(sceneMain);
         window.show();
-           
-           String destination = "127.0.0.1";
+        
+        String destination = client.callingIP;
+        System.out.println(destination);
         client.startCall(destination);
     }
     

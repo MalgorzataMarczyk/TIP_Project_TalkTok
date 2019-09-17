@@ -1,21 +1,13 @@
 package talktok_server;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
-import java.io.Reader;
+import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
@@ -25,40 +17,49 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.LinkedHashSet;
+import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.scene.image.Image;
 import org.mindrot.jbcrypt.BCrypt;
 
 public class ClientThread extends Thread {
 
 	private Socket socket;
 	private String hostname;
+        private ClientInfo clientInfo;
+        
 	private ObjectOutputStream outputStream;
 	private ObjectInputStream inputStream;
-	private final int CONNECT = 0;
-	private final int DISCONNECT = 1;
-	private final int UPDATE = 2;
-	private final int CALL = 3;
-	private final int END_CALL = 4;
-	private final int ERROR = 5;
-	private final int MIC_ON  = 6;
-        private final int MIC_OFF = 7;
-        private final int ADD_FRIEND = 8;
-        private final int REGISTER = 9;
-        private final int LOGIN = 10;
-        private final int UPDATEDATA = 11;
-        private final int UPDATEIMG = 12;
-        private final int SERVERSENTIMG = 97;
-        private final int SENDHISTORY=13;
+	private static final int CONNECT = 0;
+	private static final int DISCONNECT = 1;
+	private static final int UPDATE = 2;
+	private static final int CALL = 3;
+	private static final int END_CALL = 4;
+	private static final int ERROR = 5;
+	private static final int MIC_ON  = 6;
+        private static final int MIC_OFF = 7;
+        private static final int ADD_FRIEND = 8;
+        private static final int REGISTER = 9;
+        private static final int LOGIN = 10;
+        private static final int UPDATEDATA = 11;
+        private static final int UPDATEIMG = 12;
+        private static final int SERVERSENTIMG = 97;
+        private static final int SENDHISTORY=13;
+        private static final int ASK_IP = 14;
+        private static final int SEND_IP = 15;
+        private static final int CALL_INFORM = 16;
+        private static final int GET_USER_IP_BY_NAME = 17;
+        
 	boolean listening;
 	int id;
         public String[] userDataArray = new String[5];
+        public Vector<String> userContactVector = new Vector<String>();
+        
+        private static final int USER_NAME = 0;
         public String [] userData;
         public File imgFile;
         public String TrueUsername = null;
+        public String userIP;
         
 	public ClientThread(Socket socket, int num) {
 		this.socket = socket;
@@ -69,8 +70,11 @@ public class ClientThread extends Thread {
 			System.out.println(e);
 		}
 		this.hostname = socket.getInetAddress().getHostName();
+                this.clientInfo = null;
 		listening = true;
 		this.id = num;
+
+                        
 	}
 
 	public void run() {
@@ -91,7 +95,9 @@ public class ClientThread extends Thread {
 					break;
 				} else if (command == ADD_FRIEND) {
                                       String [] updateData = (String[]) inputStream.readObject();
-					AddContact(updateData);
+                                      AddContact(updateData);
+                                      sendContactList();
+                                        
 				} else if (command == CALL) {
                                 
 					String destination = (String) inputStream.readObject();
@@ -120,6 +126,15 @@ public class ClientThread extends Thread {
                                     UpdateImage((byte[]) inputStream.readObject());
                                 } else if(command == SENDHISTORY){
                                     sendHistoryData();
+                                }else if(command == ASK_IP){
+                                    String callUserName = (String) inputStream.readObject();
+                                    getCallUserIP(callUserName);
+                                }else if(command == GET_USER_IP_BY_NAME){
+                                    String nameForIP = (String) inputStream.readObject();
+                                    System.out.println("Name for calling IP: "+nameForIP);
+                                    ClientInfo callCielnt = ClientMap.getObject(nameForIP);
+                                    userIP = callCielnt.getIPaddress();
+                                    System.out.println(userIP);
                                 }
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -129,7 +144,7 @@ public class ClientThread extends Thread {
 		}
 	}
 
-	private void updateClients() {
+	public static void updateClients() {
 		String clientList[] = new String[Talktok_Server.clients.size()];
 		int count = 0;
 		for (ClientThread c : Talktok_Server.clients) {
@@ -139,8 +154,18 @@ public class ClientThread extends Thread {
 		broadcastMessage(UPDATE, clientList);
 	}
 
-	private void broadcastMessage(int type, Object message) {
+	public static void broadcastMessage(int type, Object message) {
 		for (ClientThread c : Talktok_Server.clients) {
+			try {
+				c.outputStream.writeInt(type);
+				c.outputStream.writeObject(message);
+			} catch (IOException e) {
+			}
+		}
+	}
+        public static void callingToUser(String targetUser, int type, Object message) {
+		for (ClientThread c : Talktok_Server.clients) {
+                    if(c.userData[USER_NAME].equals(targetUser))
 			try {
 				c.outputStream.writeInt(type);
 				c.outputStream.writeObject(message);
@@ -182,6 +207,18 @@ public class ClientThread extends Thread {
 			}
 		}
 	}
+        
+        private void getCallUserIP(String callUserName) throws IOException{
+            //Talktok_Server.updateGUI("getCallUserIP");
+            ClientInfo callCielnt = ClientMap.getObject(callUserName);
+            String callUserIP = callCielnt.getIPaddress();
+            outputStream.writeInt(SEND_IP);
+            outputStream.writeObject(callUserIP);
+            Talktok_Server.updateGUI("Call inform for: " + callUserName);
+            //callingToUser(callUserName, SEND_IP,userIP );
+            callingToUser(callUserName, CALL_INFORM, userIP);
+            
+        }
 	
         private void muteMic(String destination) {
 		for (ClientThread c : Talktok_Server.clients) {
@@ -331,9 +368,9 @@ public class ClientThread extends Thread {
 
                         
                 }catch (SQLException e ) {
-                
+                    
                 }finally {
-                    if (stmt != null) { con.close(); }
+                    con.close();
                 }
                 
             }catch(SQLException ex) {
@@ -342,49 +379,53 @@ public class ClientThread extends Thread {
             Talktok_Server.updateGUI(hostname + " response for code 99: " + message);
             outputStream.writeInt(99);
             outputStream.writeObject(message);
-            
-//            for(String data : userDataArray){
-//            System.out.println(data);
-//        }
-            
+                       
             outputStream.writeInt(98);
             outputStream.writeObject(userDataArray);
-            
-                
-           
-         try{
-            ////////////ściągamy z bazy w pętli kontakty
-            Connection con=DriverManager.getConnection( "jdbc:mysql://localhost:3306/tip?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC","root","password");  
-                Statement stmt=con.createStatement();
-             ResultSet resultContact = stmt.executeQuery("SELECT username, alias, photo, description, status FROM contact_list cl join users u on cl.friend_id=u.user_id where cl.owner_id = (select user_id from users where username = '" + TrueUsername + "');");
-                
-                 outputStream.writeInt(96);
-                while(resultContact.next())
-                {
-                   String [] HistoryDataArray = new String[4];
-               HistoryDataArray[0] = resultContact.getString("username");
-               HistoryDataArray[1] = resultContact.getString("alias");
-               HistoryDataArray[2] = resultContact.getString("description");
-               HistoryDataArray[3] = resultContact.getString("status");
-               System.out.println(HistoryDataArray[0]);
-               outputStream.writeObject(HistoryDataArray);
-                }
-            
-            
-            
-
-            
-            con.close();
-            }catch(Exception e){Logger.getLogger(ClientThread.class.getName()).log(Level.SEVERE, null, e);  }
-            
             
             if(Imagebuffer != null){
                 outputStream.writeInt(97);
                 outputStream.writeObject(Imagebuffer); 
             }
             
+            ClientMap.addObject(
+                    userDataArray[USER_NAME],
+                    new ClientInfo(
+                            socket.getInetAddress().getHostAddress(),
+                            ClientInfo.DOSTEPNY,
+                            userDataArray[USER_NAME]
+                    ));
+            sendContactList();
             sendHistoryData();
             
+        }
+        
+        public void sendContactList(){
+            try{
+            ////////////ściągamy z bazy w pętli kontakty
+            Connection con=DriverManager.getConnection( "jdbc:mysql://localhost:3306/tip?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC","root","password");  
+                Statement stmt=con.createStatement();
+                ResultSet resultContact = stmt.executeQuery("SELECT username, alias, photo, description, status FROM contact_list cl join users u on cl.friend_id=u.user_id where cl.owner_id = (select user_id from users where username = '" + TrueUsername + "');");
+               
+                
+                outputStream.writeInt(96);
+                while(resultContact.next())
+                {
+                    
+                    String [] HistoryDataArray = new String[4];
+                    String contactName = resultContact.getString("username");
+                    HistoryDataArray[USER_NAME] = contactName;
+                    HistoryDataArray[1] = resultContact.getString("alias");
+                    HistoryDataArray[2] = resultContact.getString("description");
+                    HistoryDataArray[3] = ClientMap.getClientStatus(contactName);
+               
+                    userContactVector.add(contactName);
+               
+                    System.out.println(contactName);
+                    outputStream.writeObject(HistoryDataArray);
+                }
+            con.close();
+            }catch(Exception e){Logger.getLogger(ClientThread.class.getName()).log(Level.SEVERE, null, e);  }
         }
         
 	public String getHostname() {
@@ -468,7 +509,7 @@ public class ClientThread extends Thread {
                 Logger.getLogger(ClientThread.class.getName()).log(Level.SEVERE, null, ex);
             }
 
-            
+            userContactVector.add(updateData[1]);
             try {
                 outputStream.writeInt(99);
                 outputStream.writeObject(message);
@@ -478,7 +519,7 @@ public class ClientThread extends Thread {
             
             
         }
-
+        
     private void sendHistoryData() {
         
         try{

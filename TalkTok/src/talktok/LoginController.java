@@ -5,7 +5,9 @@
  */
 package talktok;
 
+import java.net.InetAddress;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -64,12 +66,14 @@ public class LoginController implements Initializable {
             userPassword = passwordPasswordFile.getText();
     }
     
-    public int sendLoginDataToServer(String usLogin, String usPassword){
+    public int sendLoginDataToServer(String usLogin, String usPassword) throws UnknownHostException{
         String [] userData = new String[2];
         userData[0] = usLogin;
         userData[1] = usPassword;
         return client.Login(userData);
     }
+    
+
     
     
     @FXML

@@ -13,6 +13,8 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.LinkedHashSet;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -38,6 +40,7 @@ import javafx.scene.layout.Priority;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.util.Callback;
 import javax.activation.MimetypesFileTypeMap;
 import javax.swing.ImageIcon;
@@ -289,19 +292,25 @@ public class MainController implements Initializable {
                 public void handle(ActionEvent event) {
                     System.out.println(lastItem.getUsername() + " : " + event);
                     
-                    
                          try {
-        FXMLLoader fxmlLoader = new FXMLLoader();
-        fxmlLoader.setLocation(getClass().getResource("xml/calling.fxml"));
-        Scene scene = new Scene(fxmlLoader.load());
-        Stage stage = new Stage();
-         ///stage.initStyle(StageStyle.UNDECORATED);
-        stage.setScene(scene);
-        stage.show();
+                             //dzwoni do innego klienta//
+                            client.sendMyNameToServer(userName); //wysyłanie userName aby server mógł wyszukać moj IP
+                            Thread.sleep(500);
+                            client.askServerForIP(lastItem.getUsername());
+                            client.startCall(client.getCallUserIP());
+                            FXMLLoader fxmlLoader = new FXMLLoader();
+                            fxmlLoader.setLocation(getClass().getResource("xml/waitForAnswerCall.fxml"));
+                            Scene scene = new Scene(fxmlLoader.load());
+                            Stage stage = new Stage();
+                            stage.initStyle(StageStyle.UNDECORATED);
+                            stage.setScene(scene);
+                            stage.show();
         
             } catch (IOException e) {
        
-                                    }
+                                    } catch (InterruptedException ex) {
+                        Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                     
                     
                     
