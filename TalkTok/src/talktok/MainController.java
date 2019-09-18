@@ -297,14 +297,15 @@ public class MainController implements Initializable {
                             client.sendMyNameToServer(userName); //wysyłanie userName aby server mógł wyszukać moj IP
                             Thread.sleep(500);
                             client.askServerForIP(lastItem.getUsername());
+                            client.inCallWith = lastItem.getUsername();
                             client.startCall(client.getCallUserIP());
-                            FXMLLoader fxmlLoader = new FXMLLoader();
-                            fxmlLoader.setLocation(getClass().getResource("xml/waitForAnswerCall.fxml"));
-                            Scene scene = new Scene(fxmlLoader.load());
-                            Stage stage = new Stage();
-                            stage.initStyle(StageStyle.UNDECORATED);
-                            stage.setScene(scene);
-                            stage.show();
+//                            FXMLLoader fxmlLoader = new FXMLLoader();
+//                            fxmlLoader.setLocation(getClass().getResource("xml/waitForAnswerCall.fxml"));
+//                            Scene scene = new Scene(fxmlLoader.load());
+//                            Stage stage = new Stage();
+//                            stage.initStyle(StageStyle.UNDECORATED);
+//                            stage.setScene(scene);
+//                            stage.show();
         
             } catch (IOException e) {
        

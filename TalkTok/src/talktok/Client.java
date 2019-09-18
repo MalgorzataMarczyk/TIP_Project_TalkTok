@@ -32,6 +32,7 @@ public class Client {
         private int ack;
         public String [] serverData;
         public byte [] imageByte;
+        
 
 	/* Integer commands for communication with the server. */
 	private final int CONNECT = 0;
@@ -52,6 +53,8 @@ public class Client {
      private static final int GET_IP = 15;
      private static final int CALL_INFORM = 16;
      private static final int GET_USER_IP_BY_NAME = 17;
+     private static final int CALL_ACK = 18;
+     private static final int CALLING_USER_ACK = 19;
      private final int SERVERMESSAGE = 99;
      private final int SERVERDATA = 98;
      private final int SERVERSENTIMG = 97;
@@ -149,12 +152,22 @@ public class Client {
 		try {
 			outputStream.writeInt(CALL);
 			outputStream.writeObject(destination);
-
-			inCallWith = destination;
-
-			Thread.sleep(500);
+                       	Thread.sleep(500);
 
 			call = new Call(0, 3001, 3002, destination);
+
+		} catch (Exception e) {
+		}
+
+	}
+        
+        public void startCallWith(String destination) {
+		try {
+			outputStream.writeInt(CALL);
+			outputStream.writeObject(destination);
+                        Thread.sleep(500);
+
+			call = new Call(1, 3001, 3002, destination);
 
 		} catch (Exception e) {
 		}
@@ -218,7 +231,6 @@ public class Client {
                                         }
                                         else if (command == CALL) {
 						String sender = (String) inputStream.readObject();
-						inCallWith = sender;
 
 						call = new Call(1, 3001, 3002, sender);
 
@@ -307,24 +319,45 @@ public class Client {
                                         }else if(command == GET_IP){
                                             callUserIP = (String)inputStream.readObject();    
                                         }else if(command == CALL_INFORM){
-                                            callingIP = (String) inputStream.readObject();
+                                            String[] callData = new String[2];
+                                            callData = (String[]) inputStream.readObject();
+                                            callingIP = callData[0];
+                                            inCallWith = callData[1];
                                             System.out.println("Calling FROM IP: " + callingIP);
                                             Platform.runLater(()->{
                                                 try {
-                                                    System.out.print("Ktos Dzwoni");
                                                     FXMLLoader fxmlLoader = new FXMLLoader();
                                                     fxmlLoader.setLocation(getClass().getResource("xml/calling.fxml"));
                                                     
                                                     Scene scene = new Scene(fxmlLoader.load());
                                                     
                                                     Stage stage = new Stage();
-                                                    //stage.initStyle(StageStyle.UNDECORATED);
+                                                    stage.initStyle(StageStyle.UNDECORATED);
                                                     stage.setScene(scene);
                                                     stage.show();
                                                 } catch (IOException ex) {
                                                     Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
                                                 }
-});
+                                            });
+                                        }else if( command == CALLING_USER_ACK){
+                                            inCallWith = (String) inputStream.readObject();
+                                            Platform.runLater(()->{
+                                                try {
+                                                    FXMLLoader fxmlLoader = new FXMLLoader();
+                                                    fxmlLoader.setLocation(getClass().getResource("xml/activeCall.fxml"));
+                                                    
+                                                    Scene scene = new Scene(fxmlLoader.load());
+                                                    
+                                                    Stage stage = new Stage();
+                                                    stage.initStyle(StageStyle.UNDECORATED);
+                                                    stage.setScene(scene);
+                                                    stage.show();
+                                                   
+                                                    
+                                                } catch (IOException ex) {
+                                                    Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+                                                }
+                                            });
                                         }
                                         else{
                                             System.out.println("czytam");
@@ -350,6 +383,20 @@ public class Client {
 
 		}
 	}
+        
+        public void endingCall(){
+            call.endCall();
+        }
+        
+        public void callACK(String inCallUserName) throws IOException{
+            outputStream.writeInt(CALL_ACK);
+            outputStream.writeObject(inCallUserName);
+        }
+        
+        public void sendCallEndToUser (String inCallUserName) throws IOException{
+            outputStream.writeInt(20);
+            outputStream.writeObject(inCallUserName);
+        }
 
 	public void sendRecording(String recipient, byte[] arr) {
 		try {

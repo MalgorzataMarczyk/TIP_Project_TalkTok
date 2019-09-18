@@ -18,6 +18,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.stage.Stage;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
@@ -34,29 +35,28 @@ import static talktok.TalkTok.client;
  */
 public class activeCallController implements Initializable {
 
-    /**
-     * Initializes the controller class.
-     */
+   String inCallWith;
     
     private boolean Mic=true;
  
-    
+      @FXML
+    private Label receiverUserNameLabel;
     
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        
-        
+        inCallWith = client.inCallWith;
+        receiverUserNameLabel.setText("Call with: "+inCallWith);
         
         
     }    
     
     
     @FXML
-    private void EndCallButtonAction(ActionEvent event) {
+    private void EndCallButtonAction(ActionEvent event) throws IOException {
     
         client.endCall();
-        
+        client.sendCallEndToUser(inCallWith);
         
         
     Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();

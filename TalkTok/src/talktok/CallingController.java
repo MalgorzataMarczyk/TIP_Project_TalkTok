@@ -15,6 +15,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.media.AudioClip;
 import javafx.stage.Stage;
 import static talktok.TalkTok.client;
@@ -27,6 +28,12 @@ import static talktok.TalkTok.client;
 public class CallingController implements Initializable {
 AudioClip ac;
 URL path;
+Call call;
+String inCallWith;
+int isCallExist = client.isCallExist;
+
+ @FXML
+    private Label CallingUserNameLabel;
 
 
      public void playSound(String name){
@@ -42,38 +49,41 @@ URL path;
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         
+      inCallWith = client.inCallWith;
      //potem powycinam dzwieki teraz mi sie nie chce  
       playSound("sounds/cat_party.mp3");
-        
+      CallingUserNameLabel.setText(inCallWith);
         
     }    
     
     @FXML
     private void AnswerButtonAction(ActionEvent event) throws IOException {
            
-           ac.stop();
-           Parent MainParent = FXMLLoader.load(getClass().getResource("xml/activeCall.fxml"));
-       Scene sceneMain = new Scene(MainParent);
+       ac.stop();
+       
+        client.callACK(inCallWith);
+        String destination = client.callingIP;
+        client.startCallWith(destination);        
+        Parent MainParent = FXMLLoader.load(getClass().getResource("xml/activeCallRereiver.fxml"));
+        Scene sceneMain = new Scene(MainParent);
      
-       Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
+        Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
        
         window.setScene(sceneMain);
         window.show();
+
         
-        String destination = client.callingIP;
-        System.out.println(destination);
-        client.startCall(destination);
+
     }
     
     
     @FXML
     private void DeclineButtonAction(ActionEvent event) {
-           ac.stop();
-          System.out.println("todo");
+          ac.stop();
+          client.endingCall();
+          //System.out.println("todo");
           
     }
-    
-    
     
     
     

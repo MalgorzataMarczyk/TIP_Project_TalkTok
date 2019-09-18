@@ -17,7 +17,7 @@
                   <Image url="@../images/testimonial-Ortius.png" />
                </image>
             </ImageView>
-            <Label alignment="CENTER" contentDisplay="CENTER" layoutX="107.0" layoutY="25.0" prefHeight="26.0" prefWidth="209.0" text=" User Name" textAlignment="CENTER" wrapText="true">
+            <Label fx:id="CallingUserNameLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="107.0" layoutY="25.0" prefHeight="26.0" prefWidth="209.0" text=" User Name" textAlignment="CENTER" wrapText="true">
                <font>
                   <Font name="Arial" size="21.0" />
                </font>

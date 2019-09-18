@@ -49,6 +49,8 @@ public class ClientThread extends Thread {
         private static final int SEND_IP = 15;
         private static final int CALL_INFORM = 16;
         private static final int GET_USER_IP_BY_NAME = 17;
+        private static final int CALL_ACK = 18;
+        private static final int SEND_END_CALL = 20;
         
 	boolean listening;
 	int id;
@@ -60,6 +62,7 @@ public class ClientThread extends Thread {
         public File imgFile;
         public String TrueUsername = null;
         public String userIP;
+        public String nameForIP;
         
 	public ClientThread(Socket socket, int num) {
 		this.socket = socket;
@@ -130,11 +133,17 @@ public class ClientThread extends Thread {
                                     String callUserName = (String) inputStream.readObject();
                                     getCallUserIP(callUserName);
                                 }else if(command == GET_USER_IP_BY_NAME){
-                                    String nameForIP = (String) inputStream.readObject();
+                                    nameForIP = (String) inputStream.readObject();
                                     System.out.println("Name for calling IP: "+nameForIP);
                                     ClientInfo callCielnt = ClientMap.getObject(nameForIP);
                                     userIP = callCielnt.getIPaddress();
-                                    System.out.println(userIP);
+                                    //System.out.println(userIP);
+                                }else if(command == CALL_ACK){
+                                    String inCallUserName = (String) inputStream.readObject();
+                                    callingToUser(inCallUserName, 19, TrueUsername);
+                                }else if(command == SEND_END_CALL){
+                                    String inCallUserName = (String) inputStream.readObject();
+                                    callingToUser(inCallUserName, END_CALL, inCallUserName);
                                 }
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -216,7 +225,10 @@ public class ClientThread extends Thread {
             outputStream.writeObject(callUserIP);
             Talktok_Server.updateGUI("Call inform for: " + callUserName);
             //callingToUser(callUserName, SEND_IP,userIP );
-            callingToUser(callUserName, CALL_INFORM, userIP);
+            String[] callData = new String[2];
+            callData[0] = userIP;
+            callData[1] = nameForIP;
+            callingToUser(callUserName, CALL_INFORM, callData);
             
         }
 	
