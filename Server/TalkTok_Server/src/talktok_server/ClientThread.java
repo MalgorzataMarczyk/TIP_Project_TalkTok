@@ -51,6 +51,7 @@ public class ClientThread extends Thread {
         private static final int GET_USER_IP_BY_NAME = 17;
         private static final int CALL_ACK = 18;
         private static final int SEND_END_CALL = 20;
+        private static final int SERVER_GET_FRIENDS = 30;
         
 	boolean listening;
 	int id;
@@ -144,6 +145,13 @@ public class ClientThread extends Thread {
                                 }else if(command == SEND_END_CALL){
                                     String inCallUserName = (String) inputStream.readObject();
                                     callingToUser(inCallUserName, END_CALL, inCallUserName);
+                                }
+                                else if(command == SERVER_GET_FRIENDS){
+                                    System.out.println(SERVER_GET_FRIENDS);
+                                    String temp = (String)inputStream.readObject();
+                                    
+                                    sendContactList();
+
                                 }
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -421,6 +429,7 @@ public class ClientThread extends Thread {
                
                 
                 outputStream.writeInt(96);
+                System.out.println("List Sended");
                 while(resultContact.next())
                 {
                     

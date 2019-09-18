@@ -19,7 +19,6 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import static talktok.MainController.ContactList;
 
 public class Client {
 
@@ -32,6 +31,7 @@ public class Client {
         private int ack;
         public String [] serverData;
         public byte [] imageByte;
+        public MainController windowsController = null;
         
 
 	/* Integer commands for communication with the server. */
@@ -55,6 +55,7 @@ public class Client {
      private static final int GET_USER_IP_BY_NAME = 17;
      private static final int CALL_ACK = 18;
      private static final int CALLING_USER_ACK = 19;
+     private static final int SERVER_GET_FRIENDS = 30;
      private final int SERVERMESSAGE = 99;
      private final int SERVERDATA = 98;
      private final int SERVERSENTIMG = 97;
@@ -75,6 +76,7 @@ public class Client {
         
         private String callUserIP;
         public String callingIP;
+        
 
 	/* Variables related to a voice call that is being made. */
 	Call call;
@@ -201,7 +203,7 @@ public class Client {
 						System.out.println(hostname + " disconnected");
 					} else if (command == UPDATE) {
 						String[] list = (String[]) inputStream.readObject();
-						System.out.println(list.length);
+						System.out.println("Update: " +list.length);
 					} else if (command == ADD_FRIEND) {
 						//String message = (String) inputStream.readObject();
 						//System.out.println(message);
@@ -296,24 +298,31 @@ public class Client {
                                              
                                             
                                         } else if(command==SERVERSENCONTACTS){
+                                            System.out.println("gotit");
                                             String [] ContactDataArray = new String[4];
-                                            
-                                          try
-                                                   {
+                                            ContactList.clear();
+                                            try
+                                            {
                                                 for (;;)
-                                                   {
-                                                         ContactDataArray =  (String []) inputStream.readObject();
-                                                          ContactList.add( new Contact(ContactDataArray[0],ContactDataArray[1],ContactDataArray[2],ContactDataArray[3]));
-                                                            }
-                                                             }
-                                                          catch (SocketTimeoutException exc)
-                                                             {
-                                                                        // you got the timeout
-                                                           }
-                                                          catch (EOFException exc)
-                                                          {
-                                                             System.out.println("koniec " + ContactDataArray[0]);
-                                                            }
+                                                {
+                                                    ContactDataArray =  (String []) inputStream.readObject();
+                                                    ContactList.add( new Contact(ContactDataArray[0],ContactDataArray[1],ContactDataArray[2],ContactDataArray[3]));
+                                                }
+                                            }
+                                            catch (SocketTimeoutException exc)
+                                            {
+                                                // you got the timeout
+                                                System.out.println("wszystko");
+                                            }
+                                            catch (EOFException exc)
+                                            {
+                                                System.out.println("koniec " + ContactDataArray[0]);
+                                            }
+                                            finally{
+                                                System.out.println("try refresh list");
+                                                if(windowsController != null)
+                                                    windowsController.RefreshContactList();
+                                            }
                                             
                                             
                                         }else if(command == GET_IP){
@@ -494,6 +503,8 @@ public class Client {
             return callUserIP;
         }
         
+
+        
         public Image getServerImage(){
             int i =0;
             while(imageByte == null && i < 10){
@@ -529,6 +540,19 @@ public class Client {
             }catch (IOException ex) {
                 Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
             }
+        }
+        
+        public void updateFriendList(){
+            try {
+                System.out.println("send request to server get friend");
+                outputStream.writeInt(SERVER_GET_FRIENDS);
+                outputStream.writeObject("send");
+                System.out.println("sended request to server get friend");
+            } catch (IOException ex) {
+                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+            
         }
         
         public int ContactSendData(String [] userData){

@@ -8,12 +8,17 @@ package talktok;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import static talktok.TalkTok.client;
 
 /**
@@ -26,11 +31,26 @@ public class activeCallReceiverController implements Initializable{
     private Label callingUserNameLabel;
     String inCallWith;
     Call call;
+    @FXML
+    private Text timeText;
+    int mins = 0, secs = 0, millis = 0;
+    Timeline timeline;
     
      @Override
     public void initialize(URL url, ResourceBundle rb) {
          inCallWith = client.inCallWith;
          callingUserNameLabel.setText("Call with: "+inCallWith);
+         
+         timeText.setText("00:00:000"); 
+	timeline = new Timeline(new KeyFrame(Duration.millis(1), new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+            	change(timeText);
+			}
+		}));
+		timeline.setCycleCount(Timeline.INDEFINITE);
+		timeline.setAutoReverse(false);
+                timeline.play();
     }    
     
     
@@ -45,11 +65,21 @@ public class activeCallReceiverController implements Initializable{
     
     @FXML
     private void MicButtonAction(ActionEvent event) {
-        ///nie dziala :(
-        
-       
+
             client.Mic();
-        
-        
+    }
+    
+    void change(Text text) {
+		if(millis == 1000) {
+			secs++;
+			millis = 0;
+		}
+		if(secs == 60) {
+			mins++;
+			secs = 0;
+		}
+		text.setText((((mins/10) == 0) ? "0" : "") + mins + ":"
+		 + (((secs/10) == 0) ? "0" : "") + secs + ":" 
+			+ (((millis/10) == 0) ? "00" : (((millis/100) == 0) ? "0" : "")) + millis++);
     }
 }

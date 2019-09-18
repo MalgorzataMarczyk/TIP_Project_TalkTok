@@ -7,6 +7,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="311.0" prefWidth="386.0" style=" -fx-background-color: linear-gradient(#fb6caa, #fcc4e4);" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="talktok.activeCallController">
    <children>
@@ -48,6 +49,6 @@
             <Image url="@../images/testimonial-Ortius.png" />
          </image>
       </ImageView>
-      <Label layoutX="179.0" layoutY="261.0" text="00:00" />
+      <Text fx:id="timeText" layoutX="168.0" layoutY="274.0" strokeType="OUTSIDE" strokeWidth="0.0" text="00:00:000" />
    </children>
 </AnchorPane>

@@ -14,12 +14,17 @@ import java.net.UnknownHostException;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
@@ -41,12 +46,27 @@ public class activeCallController implements Initializable {
  
       @FXML
     private Label receiverUserNameLabel;
-    
+    @FXML
+    private Text timeText;
+    int mins = 0, secs = 0, millis = 0;
+    Timeline timeline;
+
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         inCallWith = client.inCallWith;
         receiverUserNameLabel.setText("Call with: "+inCallWith);
+        
+        timeText.setText("00:00:000"); 
+	timeline = new Timeline(new KeyFrame(Duration.millis(1), new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+            	change(timeText);
+			}
+		}));
+		timeline.setCycleCount(Timeline.INDEFINITE);
+		timeline.setAutoReverse(false);
+                timeline.play();
         
         
     }    
@@ -65,14 +85,22 @@ public class activeCallController implements Initializable {
     
     @FXML
     private void MicButtonAction(ActionEvent event) {
-        ///nie dziala :(
-        
-       
             client.Mic();
-        
-        
     }
     
+    void change(Text text) {
+		if(millis == 1000) {
+			secs++;
+			millis = 0;
+		}
+		if(secs == 60) {
+			mins++;
+			secs = 0;
+		}
+		text.setText((((mins/10) == 0) ? "0" : "") + mins + ":"
+		 + (((secs/10) == 0) ? "0" : "") + secs + ":" 
+			+ (((millis/10) == 0) ? "00" : (((millis/100) == 0) ? "0" : "")) + millis++);
+    }
     
     
      

@@ -27,6 +27,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
@@ -37,12 +38,14 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
+import javafx.scene.text.Font;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Callback;
 import javax.activation.MimetypesFileTypeMap;
+import javax.annotation.PostConstruct;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import static talktok.HistoryController.StoryList;
@@ -122,17 +125,30 @@ public class MainController implements Initializable {
         if(icon != null)
             userImage.setImage(icon);
 
+       // RefreshContactList();
+        
+        //System.out.println(ContactList.size());
+        //////jeśli lista kontaktow nie jest pusta labelFriends.setVisible(false);
+        client.windowsController = this;
+        
+        StoryList = client.HistoryList;
+        System.out.println("winows created");
+        client.updateFriendList();
+    }  
+   
+    
+    public void RefreshContactList()
+    {
+         Platform.runLater(() -> {
+        System.out.println("refresh contact");
         //////////dodawanie zawartości z serwera
         ContactList = client.ContactList;
-        
-        System.out.println(ContactList.size());
-        //////jeśli lista kontaktow nie jest pusta labelFriends.setVisible(false);
-        if (!ContactList.isEmpty()){labelFriends.setVisible(false);}
-        
+         if (!ContactList.isEmpty()){labelFriends.setVisible(false);}
+      
           ObservableList<Contact> ContactObservableList;
        
         ContactObservableList = FXCollections.observableArrayList();
-        
+        System.out.println("size:"+ContactObservableList.size());
         ContactObservableList.addAll(ContactList);
         
         
@@ -146,11 +162,9 @@ public class MainController implements Initializable {
         return new XCell();
             }
             });
-        
-        StoryList = client.HistoryList;
-        
-        
-    }    
+         });
+                 
+    }
 
     @FXML
     private void AddFriendButtonAction(ActionEvent event) {
@@ -260,13 +274,13 @@ public class MainController implements Initializable {
         Label FXstatus = new Label();
         Pane pane = new Pane();
         Button buttonC = new Button(); ///zadzwoń
-        Button buttonR = new Button(); ///usun ze znajomych
+        //Button buttonR = new Button(); ///usun ze znajomych
         Contact lastItem;
 
         public XCell() {
             super();
             buttonC.setId("call");
-            buttonR.setId("remove");
+            //buttonR.setId("remove");
             
             Platform.runLater(() -> {
     InputStream input = getClass().getResourceAsStream("images/call-icon.png");
@@ -276,21 +290,22 @@ public class MainController implements Initializable {
     buttonC.setGraphic(imageView);
 });
             
-            Platform.runLater(() -> {
-    InputStream input = getClass().getResourceAsStream("images/remove.png");
-    //set the size for image
-    Image image = new Image(input, 18, 18, true, true);
-    ImageView imageView = new ImageView(image);            
-    buttonR.setGraphic(imageView);
-});
+//                    Platform.runLater(() -> {
+//            InputStream input = getClass().getResourceAsStream("images/remove.png");
+//            //set the size for image
+//            Image image = new Image(input, 18, 18, true, true);
+//            ImageView imageView = new ImageView(image);            
+//            buttonR.setGraphic(imageView);
+//        });
             
-            
-            hbox.getChildren().addAll(FXalias,FXstatus,FXopis, pane, buttonC,buttonR);
+            FXalias.setFont(new Font("Arial", 22));
+            FXopis.setTranslateX(40);
+            hbox.getChildren().addAll(FXalias,FXopis, pane, buttonC);
             HBox.setHgrow(pane, Priority.ALWAYS);
             buttonC.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent event) {
-                    System.out.println(lastItem.getUsername() + " : " + event);
+                    //System.out.println(lastItem.getUsername() + " : " + event);
                     
                          try {
                              //dzwoni do innego klienta//
@@ -299,14 +314,7 @@ public class MainController implements Initializable {
                             client.askServerForIP(lastItem.getUsername());
                             client.inCallWith = lastItem.getUsername();
                             client.startCall(client.getCallUserIP());
-//                            FXMLLoader fxmlLoader = new FXMLLoader();
-//                            fxmlLoader.setLocation(getClass().getResource("xml/waitForAnswerCall.fxml"));
-//                            Scene scene = new Scene(fxmlLoader.load());
-//                            Stage stage = new Stage();
-//                            stage.initStyle(StageStyle.UNDECORATED);
-//                            stage.setScene(scene);
-//                            stage.show();
-        
+
             } catch (IOException e) {
        
                                     } catch (InterruptedException ex) {
@@ -319,12 +327,12 @@ public class MainController implements Initializable {
                 }
             });
             
-            buttonR.setOnAction(new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent event) {
-                    System.out.println(lastItem.getUsername() + " : " + event);
-                }
-            });
+//            buttonR.setOnAction(new EventHandler<ActionEvent>() {
+//                @Override
+//                public void handle(ActionEvent event) {
+//                    System.out.println(lastItem.getUsername() + " : " + event);
+//                }
+//            });
             
         }
 

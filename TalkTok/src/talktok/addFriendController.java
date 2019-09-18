@@ -19,7 +19,7 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import javax.swing.JOptionPane;
 import static talktok.MainController.userName;
-
+import static talktok.TalkTok.client;
 /**
  * FXML Controller class
  *
@@ -67,9 +67,11 @@ public class addFriendController implements Initializable {
           
           
           if(userAdded){
-          JOptionPane.showMessageDialog(null, "Dodano do kontaktów!");
-           UsernameTextField.clear();
-          AliasTextField.clear();
+            JOptionPane.showMessageDialog(null, "Dodano do kontaktów!");
+          
+            UsernameTextField.clear();
+            AliasTextField.clear();
+            client.updateFriendList();
             }
       else
       {
