@@ -10,18 +10,21 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.LinkedHashSet;
-
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 public class Client {
 
+private double xOffset = 0;
+private double yOffset = 0;
 	/* Socket related global variables. */
 	private String hostname;
 	private int portNumber;
@@ -234,11 +237,11 @@ public class Client {
                                         else if (command == CALL) {
 						String sender = (String) inputStream.readObject();
 
-						call = new Call(1, 3001, 3002, sender);
+						//call = new Call(1, 3001, 3002, sender);
 
-						System.out.println(sender
-								+ " has started a call with you");
-						
+						//System.out.println(sender
+						//		+ " has started a call with you");
+						/*
                                                 Platform.runLater(new Runnable(){
                                                     @Override
                                                     public void run() {
@@ -254,7 +257,7 @@ public class Client {
     } catch (IOException e) {
        
     }
-                                                    } });
+                                                    } });*/
                                                 
                                                 
                                                 
@@ -263,6 +266,7 @@ public class Client {
 						String sender = (String) inputStream.readObject();
 						call.endCall();
 						System.out.println(sender + " has ended the call");
+                                                
 						
 					} else if (command == ERROR) {
 						String message = (String) inputStream.readObject();
@@ -344,6 +348,26 @@ public class Client {
                                                     stage.initStyle(StageStyle.UNDECORATED);
                                                     stage.setScene(scene);
                                                     stage.show();
+                                                    
+                                                    
+                                                    
+                                                    scene.setOnMousePressed(new EventHandler<MouseEvent>() {
+                                                        @Override
+                                                        public void handle(MouseEvent event) {
+                                                            xOffset = event.getSceneX();
+                                                            yOffset = event.getSceneY();
+                                                        }
+                                                    });
+                                                    scene.setOnMouseDragged(new EventHandler<MouseEvent>() {
+                                                        @Override
+                                                        public void handle(MouseEvent event) {
+                                                            stage.setX(event.getScreenX() - xOffset);
+                                                            stage.setY(event.getScreenY() - yOffset);
+                                                        }
+                                                    });
+                                                    
+                                                    
+                                                    
                                                 } catch (IOException ex) {
                                                     Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
                                                 }
@@ -362,6 +386,23 @@ public class Client {
                                                     stage.setScene(scene);
                                                     stage.show();
                                                    
+                                                    
+                                                    scene.setOnMousePressed(new EventHandler<MouseEvent>() {
+                                                        @Override
+                                                        public void handle(MouseEvent event) {
+                                                            xOffset = event.getSceneX();
+                                                            yOffset = event.getSceneY();
+                                                        }
+                                                    });
+                                                    scene.setOnMouseDragged(new EventHandler<MouseEvent>() {
+                                                        @Override
+                                                        public void handle(MouseEvent event) {
+                                                            stage.setX(event.getScreenX() - xOffset);
+                                                            stage.setY(event.getScreenY() - yOffset);
+                                                        }
+                                                    });
+                                                    
+                                                    
                                                     
                                                 } catch (IOException ex) {
                                                     Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
@@ -402,9 +443,11 @@ public class Client {
             outputStream.writeObject(inCallUserName);
         }
         
-        public void sendCallEndToUser (String inCallUserName) throws IOException{
+        public void sendCallEndToUser (String inCallUserName,String WhoCalled, String time) throws IOException{
             outputStream.writeInt(20);
             outputStream.writeObject(inCallUserName);
+             outputStream.writeObject(WhoCalled);
+             outputStream.writeObject(time);
         }
 
 	public void sendRecording(String recipient, byte[] arr) {

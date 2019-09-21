@@ -27,6 +27,7 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
@@ -45,6 +46,8 @@ public class HistoryController implements Initializable {
     private Pane paneStories;
     
    
+private double xOffset = 0;
+private double yOffset = 0;
      @FXML
           ListView<Record> listStories; ///////listview
      
@@ -94,6 +97,24 @@ public class HistoryController implements Initializable {
        Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
        
        
+       
+        sceneMain.setOnMousePressed(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                xOffset = event.getSceneX();
+                yOffset = event.getSceneY();
+            }
+        });
+        sceneMain.setOnMouseDragged(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                window.setX(event.getScreenX() - xOffset);
+                window.setY(event.getScreenY() - yOffset);
+            }
+        });
+
+       
+       
         window.setScene(sceneMain);
         window.show();
         
@@ -105,6 +126,7 @@ public class HistoryController implements Initializable {
 
     @FXML
     private void quitButtonAction(ActionEvent event) {
+        client.disconnect();
         Platform.exit();
     }
     
@@ -144,9 +166,9 @@ public class HistoryController implements Initializable {
                 lastItem = item;
                 ///label.setText(item!=null ? item : "<null>");
                  
-                FXcaller.setText(lastItem.getCaller());
-                FXanswer.setText(lastItem.getAnswer());
-                FXtime.setText(lastItem.getTime());
+                FXcaller.setText(lastItem.getCaller()+ " -> ");
+                FXanswer.setText(lastItem.getAnswer() + "\n");
+                FXtime.setText(lastItem.getTime() + " ");
                 FXdate.setText(lastItem.getDate());
                 setGraphic(hbox);
             }
