@@ -20,6 +20,7 @@ import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.media.AudioClip;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import static talktok.TalkTok.client;
 
 /**
@@ -70,10 +71,11 @@ private double yOffset = 0;
         Parent MainParent = FXMLLoader.load(getClass().getResource("xml/activeCallRereiver.fxml"));
         Scene sceneMain = new Scene(MainParent);
      
+
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
-       
         window.setScene(sceneMain);
         window.show();
+
 
         sceneMain.setOnMousePressed(new EventHandler<MouseEvent>() {
             @Override

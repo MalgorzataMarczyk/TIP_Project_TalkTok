@@ -308,19 +308,26 @@ public class MainController implements Initializable {
                     //System.out.println(lastItem.getUsername() + " : " + event);
                     
                          try {
-                             //dzwoni do innego klienta//
-                            client.sendMyNameToServer(userName); //wysyłanie userName aby server mógł wyszukać moj IP
-                            Thread.sleep(500);
-                            client.askServerForIP(lastItem.getUsername());
-                            client.inCallWith = lastItem.getUsername();
-                            client.startCall(client.getCallUserIP());
+                             client.getUserStatus(lastItem.getUsername());
+                             Thread.sleep(500);
+                            if (client.userStatus != null && client.userStatus != 0){
+                                //dzwoni do innego klienta//
+                                client.sendMyNameToServer(userName); //wysyłanie userName aby server mógł wyszukać moj IP
+                                Thread.sleep(500);
+                                client.askServerForIP(lastItem.getUsername());
+                                client.inCallWith = lastItem.getUsername();
+                                
+                                client.startCall(client.getCallUserIP());
+                            }else{
+                                JOptionPane.showMessageDialog(null, "Użytkownik nie jest dostępny");
+                            }
+                            
+                        } catch (IOException e) {
 
-            } catch (IOException e) {
-       
-                                    } catch (InterruptedException ex) {
-                        Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                    
+                                                } catch (InterruptedException ex) {
+                                    Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);
+                                }
+
                     
                     
                    

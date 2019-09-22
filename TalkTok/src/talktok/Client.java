@@ -43,23 +43,25 @@ public class Client {
 	private final int ERROR = 5;
 	private final int MIC_ON  = 6;
 	private final int MIC_OFF = 7;
-    private final int ADD_FRIEND = 8;
-    private final int REGISTER = 9;
-     private final int LOGIN = 10;
-     private final int UPDATEDATA = 11;
-     private final int UPDATEIMG = 12;
-     private final int GETHISTORY = 13;
-     private static final int ASK_IP = 14;
-     private static final int GET_IP = 15;
-     private static final int CALL_INFORM = 16;
-     private static final int GET_USER_IP_BY_NAME = 17;
-     private static final int CALL_ACK = 18;
-     private static final int CALLING_USER_ACK = 19;
-     private static final int SERVER_GET_FRIENDS = 30;
-     private final int SERVERMESSAGE = 99;
-     private final int SERVERDATA = 98;
-     private final int SERVERSENTIMG = 97;
-      private final int SERVERSENCONTACTS = 96;
+        private final int ADD_FRIEND = 8;
+        private final int REGISTER = 9;
+         private final int LOGIN = 10;
+         private final int UPDATEDATA = 11;
+         private final int UPDATEIMG = 12;
+         private final int GETHISTORY = 13;
+         private static final int ASK_IP = 14;
+         private static final int GET_IP = 15;
+         private static final int CALL_INFORM = 16;
+         private static final int GET_USER_IP_BY_NAME = 17;
+         private static final int CALL_ACK = 18;
+         private static final int CALLING_USER_ACK = 19;
+         private static final int SERVER_GET_FRIENDS = 30;
+         private static final int GET_USER_STATUS = 40;
+         private static final int USER_STATUS = 41;
+         private final int SERVERMESSAGE = 99;
+         private final int SERVERDATA = 98;
+         private final int SERVERSENTIMG = 97;
+          private final int SERVERSENCONTACTS = 96;
       
 
       LinkedHashSet <Contact> ContactList = new LinkedHashSet<Contact>();
@@ -76,6 +78,7 @@ public class Client {
         
         private String callUserIP;
         public String callingIP;
+        public Integer userStatus = 0;
         
 
 	/* Variables related to a voice call that is being made. */
@@ -341,7 +344,7 @@ public class Client {
                                                     Scene scene = new Scene(fxmlLoader.load());
                                                     
                                                     Stage stage = new Stage();
-                                                    stage.initStyle(StageStyle.UNDECORATED);
+                                                    //stage.initStyle(StageStyle.UNDECORATED);
                                                     stage.setScene(scene);
                                                     stage.show();
                                                 } catch (IOException ex) {
@@ -358,7 +361,7 @@ public class Client {
                                                     Scene scene = new Scene(fxmlLoader.load());
                                                     
                                                     Stage stage = new Stage();
-                                                    stage.initStyle(StageStyle.UNDECORATED);
+                                                    //stage.initStyle(StageStyle.UNDECORATED);
                                                     stage.setScene(scene);
                                                     stage.show();
                                                    
@@ -367,6 +370,9 @@ public class Client {
                                                     Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
                                                 }
                                             });
+                                        }else if (command == USER_STATUS){
+                                            String usSt = (String) inputStream.readObject();
+                                            userStatus = Integer.parseInt(usSt);
                                         }
                                         else{
                                             System.out.println("czytam");
@@ -503,8 +509,6 @@ public class Client {
             return callUserIP;
         }
         
-
-        
         public Image getServerImage(){
             int i =0;
             while(imageByte == null && i < 10){
@@ -599,6 +603,11 @@ public class Client {
             return ack;
         
             
+        }
+        
+        public void getUserStatus(String userName) throws IOException{
+           outputStream.writeInt( GET_USER_STATUS);
+           outputStream.writeObject(userName);
         }
         
         

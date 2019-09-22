@@ -22,4 +22,12 @@ public class ClientMap {
         return ((ClientInfo)clientMap.get(key)).getStatus();
     }
     
+    public static void removeClient(String key){
+        clientMap.remove(key);
+    }
+    
+    public static void repleceClientInfo(String key, ClientInfo info){
+        clientMap.replace(key, info);
+    }
+    
 }

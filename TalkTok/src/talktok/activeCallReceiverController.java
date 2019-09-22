@@ -21,10 +21,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import static talktok.TalkTok.client;
 
-/**
- *
- * @author Gosia
- */
+
 public class activeCallReceiverController implements Initializable{
     private boolean Mic=true;
     @FXML

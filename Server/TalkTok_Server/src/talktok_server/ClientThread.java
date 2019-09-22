@@ -52,6 +52,8 @@ public class ClientThread extends Thread {
         private static final int CALL_ACK = 18;
         private static final int SEND_END_CALL = 20;
         private static final int SERVER_GET_FRIENDS = 30;
+        private static final int GET_USER_STATUS = 40;
+        private static final int USER_STATUS = 41;
         
 	boolean listening;
 	int id;
@@ -152,6 +154,11 @@ public class ClientThread extends Thread {
                                     
                                     sendContactList();
 
+                                }else if(command == GET_USER_STATUS){
+                                    String userName = (String) inputStream.readObject();
+                                    String userStatus = ClientMap.getClientStatus(userName);
+                                    outputStream.writeInt(USER_STATUS);
+                                    outputStream.writeObject(userStatus);
                                 }
 			} catch (IOException e) {
 				e.printStackTrace();
