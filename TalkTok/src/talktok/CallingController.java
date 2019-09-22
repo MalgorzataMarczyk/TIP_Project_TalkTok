@@ -76,7 +76,6 @@ private double yOffset = 0;
         window.setScene(sceneMain);
         window.show();
 
-
         sceneMain.setOnMousePressed(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
@@ -91,7 +90,7 @@ private double yOffset = 0;
                 window.setY(event.getScreenY() - yOffset);
             }
         });
-
+        
     }
     
     
@@ -99,13 +98,12 @@ private double yOffset = 0;
     private void DeclineButtonAction(ActionEvent event) throws IOException {
           ac.stop();
           //client.endingCall();
-          client.sendCallEndToUser(inCallWith);
+         client.sendCallEndToUser(inCallWith,"none","none");
           Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
           stage.close();
           
           
     }
     
-    
-    
+  
 }

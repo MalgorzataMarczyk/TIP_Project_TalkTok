@@ -33,6 +33,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javax.swing.JOptionPane;
 import java.sql.*; 
+import static talktok.TalkTok.client;
 
 /**
  *
@@ -217,6 +218,7 @@ public class RegisterController implements Initializable {
     
     @FXML
     private void quitButtonAction(ActionEvent event){
+        client.disconnect();
      Platform.exit();
     }
     

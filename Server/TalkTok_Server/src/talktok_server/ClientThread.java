@@ -15,8 +15,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -143,9 +145,30 @@ public class ClientThread extends Thread {
                                     //System.out.println(userIP);
                                 }else if(command == CALL_ACK){
                                     String inCallUserName = (String) inputStream.readObject();
+                                    
                                     callingToUser(inCallUserName, 19, TrueUsername);
                                 }else if(command == SEND_END_CALL){
+                                    
+                                 
                                     String inCallUserName = (String) inputStream.readObject();
+                                    String UserWhichCalled = (String) inputStream.readObject();
+                                    String Time = (String) inputStream.readObject();
+                                    if(UserWhichCalled.equals("me")){
+                                        UserWhichCalled=TrueUsername;}
+                                    
+                                    if (!Time.equals("none")){
+                                        System.out.println("koniec rozmowy" + UserWhichCalled + "-" + inCallUserName + " : " + Time);
+                                     /////wpychamy do bazy historie bo wiemy ze trwało połączenie
+                                     insertStory(UserWhichCalled,inCallUserName,Time);
+                                     
+                                    
+                                    }
+                                    else {System.out.println("Odrzuciło");}
+                                    
+                                    
+                                    
+                                    
+                                    
                                     callingToUser(inCallUserName, END_CALL, inCallUserName);
                                 }
                                 else if(command == SERVER_GET_FRIENDS){
@@ -223,6 +246,7 @@ public class ClientThread extends Thread {
 		for (ClientThread c : Talktok_Server.clients) {
 			if (c.getHostname().equals(destination)) {
 				try {
+                                    
 					c.outputStream.writeInt(END_CALL);
 					c.outputStream.writeObject(hostname);
 				} catch (Exception e) {
@@ -551,10 +575,13 @@ public class ClientThread extends Thread {
     private void sendHistoryData() {
         
         try{
-            ////////////ściągamy z bazy w pętli kontakty
+            ////////////ściągamy z bazy w pętli historie
             Connection con=DriverManager.getConnection( "jdbc:mysql://localhost:3306/tip?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC","root","password");  
              Statement stmt=con.createStatement();
              Statement stmt2=con.createStatement();
+             
+    
+                   
              
              ResultSet resultMyId = stmt.executeQuery("select user_id from users where username='" + TrueUsername + "';");
               String myId =null;
@@ -591,24 +618,15 @@ public class ClientThread extends Thread {
                    
                    }
                    
-                String data = time_start.substring(0, 10);
+                String data = time_start;
                 
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
-                LocalDateTime dateTime1= LocalDateTime.parse(time_start, formatter);
-                LocalDateTime dateTime2= LocalDateTime.parse(time_end, formatter);
-                long diffInSeconds = java.time.Duration.between(dateTime1, dateTime2).getSeconds();
                 
-                long hours = diffInSeconds / 3600;
-                long minutes = (diffInSeconds % 3600) / 60;
-                long seconds = diffInSeconds % 60;
-                String time = (hours + ":"+minutes + ":"+seconds);
-                System.out.println(time + " <- czas data -> " + data);
+                
                 
                ContactDataArray[0] = caller;
                ContactDataArray[1] = receiver;
                ContactDataArray[2] = data;
-               ContactDataArray[3] = time;
+               ContactDataArray[3] = time_end;
                System.out.println(ContactDataArray[0]+"_" +ContactDataArray[1]+"_" +ContactDataArray[2]+"_" + ContactDataArray[3]);
                outputStream.writeObject(ContactDataArray);
                 }
@@ -624,4 +642,23 @@ public class ClientThread extends Thread {
         
     }
 
+    private void insertStory(String caller, String receiver, String time){
+         Connection con;  
+            try {
+                con = DriverManager.getConnection( "jdbc:mysql://localhost:3306/tip?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC","root","password");
+            
+
+            Statement stmt=con.createStatement();
+            long millis=System.currentTimeMillis();  
+            java.sql.Date timestamp=new java.sql.Date(millis); 
+
+        System.out.println(timestamp);
+             int rs=stmt.executeUpdate("insert into call_history(caller_id, receiver_id, time_start, time_end, status) values((select user_id from users where username='"+caller+"'),(select user_id from users where username='"+receiver+"'),'"+timestamp+"','"+time+"',\"0\");");  
+                  
+            } catch (SQLException ex) {
+                Logger.getLogger(ClientThread.class.getName()).log(Level.SEVERE, null, ex);
+            }
+    }
+    
+    
 }

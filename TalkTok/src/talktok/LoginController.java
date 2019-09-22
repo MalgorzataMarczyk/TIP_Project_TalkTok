@@ -173,6 +173,7 @@ public class LoginController implements Initializable {
     
     @FXML
     private void quitButtonAction(ActionEvent event){
+        client.disconnect();
      Platform.exit();
     }
     

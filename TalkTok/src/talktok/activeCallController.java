@@ -31,6 +31,7 @@ import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.TargetDataLine;
+import static talktok.Call.inCall;
 import static talktok.TalkTok.client;
 
 /**
@@ -41,7 +42,6 @@ import static talktok.TalkTok.client;
 public class activeCallController implements Initializable {
 
    String inCallWith;
-    
     private boolean Mic=true;
  
       @FXML
@@ -50,11 +50,15 @@ public class activeCallController implements Initializable {
     private Text timeText;
     int mins = 0, secs = 0, millis = 0;
     Timeline timeline;
-
+private String WhoCalled;
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        
+        
+        
         inCallWith = client.inCallWith;
+        WhoCalled="me";
         receiverUserNameLabel.setText("Call with: "+inCallWith);
         
         timeText.setText("00:00:000"); 
@@ -75,14 +79,15 @@ public class activeCallController implements Initializable {
     @FXML
     private void EndCallButtonAction(ActionEvent event) throws IOException {
     
-        client.endCall();
-        client.sendCallEndToUser(inCallWith);
-        
+       
+        String time=timeText.getText();
+        client.sendCallEndToUser(inCallWith,WhoCalled,time);
+         client.endingCall();
         
     Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
     stage.close();
     }
-    
+   
     @FXML
     private void MicButtonAction(ActionEvent event) {
             client.Mic();
@@ -100,7 +105,13 @@ public class activeCallController implements Initializable {
 		text.setText((((mins/10) == 0) ? "0" : "") + mins + ":"
 		 + (((secs/10) == 0) ? "0" : "") + secs + ":" 
 			+ (((millis/10) == 0) ? "00" : (((millis/100) == 0) ? "0" : "")) + millis++);
+                if(!inCall){
+                    Stage stage = (Stage) timeText.getScene().getWindow();
+                    stage.close();
+                    }
     }
+
+   
     
     
      

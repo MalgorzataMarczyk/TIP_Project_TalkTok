@@ -19,14 +19,19 @@ import javafx.scene.control.Label;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import static talktok.Call.inCall;
 import static talktok.TalkTok.client;
 
 
 public class activeCallReceiverController implements Initializable{
     private boolean Mic=true;
+    
+    
+    
     @FXML
     private Label callingUserNameLabel;
     String inCallWith;
+    private String WhoCalled;
     Call call;
     @FXML
     private Text timeText;
@@ -36,8 +41,9 @@ public class activeCallReceiverController implements Initializable{
      @Override
     public void initialize(URL url, ResourceBundle rb) {
          inCallWith = client.inCallWith;
+         WhoCalled=inCallWith;
          callingUserNameLabel.setText("Call with: "+inCallWith);
-         
+        
          timeText.setText("00:00:000"); 
 	timeline = new Timeline(new KeyFrame(Duration.millis(1), new EventHandler<ActionEvent>() {
 			@Override
@@ -53,8 +59,8 @@ public class activeCallReceiverController implements Initializable{
     
     @FXML
     private void EndCallButtonAction(ActionEvent event) throws IOException {
-        
-        client.sendCallEndToUser(inCallWith);
+        String time=timeText.getText();
+        client.sendCallEndToUser(inCallWith,WhoCalled,time);
         client.endingCall();
         Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
         stage.close();
@@ -78,5 +84,11 @@ public class activeCallReceiverController implements Initializable{
 		text.setText((((mins/10) == 0) ? "0" : "") + mins + ":"
 		 + (((secs/10) == 0) ? "0" : "") + secs + ":" 
 			+ (((millis/10) == 0) ? "00" : (((millis/100) == 0) ? "0" : "")) + millis++);
+                
+                if(!inCall){
+                    Stage stage = (Stage) timeText.getScene().getWindow();
+                    stage.close();
+                    }
+                
     }
 }
