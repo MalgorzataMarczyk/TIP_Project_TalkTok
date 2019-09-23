@@ -70,9 +70,11 @@ private double yOffset = 0;
         client.startCallWith(destination);        
         Parent MainParent = FXMLLoader.load(getClass().getResource("xml/activeCallRereiver.fxml"));
         Scene sceneMain = new Scene(MainParent);
-     
+        
 
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
+        
+        ///window.initStyle(StageStyle.UNDECORATED);
         window.setScene(sceneMain);
         window.show();
 
@@ -100,7 +102,7 @@ private double yOffset = 0;
           
           client.sendCallEndToUser(inCallWith,"none","none");
           System.out.println("Client who call to me is : " + inCallWith);
-          //client.endingCall();
+          ///client.endingCall();
           Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
           stage.close();
           

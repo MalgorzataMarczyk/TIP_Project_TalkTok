@@ -18,6 +18,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -31,6 +32,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import static talktok.TalkTok.client;
@@ -146,11 +148,18 @@ private double yOffset = 0;
 
         public XCell() {
             super();
-           
+           FXcaller.setFont(new Font("Arial", 18));
+           FXanswer.setFont(new Font("Arial", 18));
+            FXcaller.setPrefWidth(60);
+            FXanswer.setPrefWidth(60);
             
-            hbox.getChildren().addAll(FXcaller,FXanswer,FXtime,FXdate, pane);
+           FXtime.setFont(new Font("Arial", 12));
+           FXdate.setFont(new Font("Arial", 50));
+           FXtime.setTranslateY(25);
+            
+            hbox.getChildren().addAll(FXdate,FXcaller,FXtime,FXanswer, pane);
             HBox.setHgrow(pane, Priority.ALWAYS);
-           
+           hbox.setAlignment(Pos.CENTER);
             
             
         }
@@ -166,10 +175,15 @@ private double yOffset = 0;
                 lastItem = item;
                 ///label.setText(item!=null ? item : "<null>");
                  
-                FXcaller.setText(lastItem.getCaller()+ " -> ");
-                FXanswer.setText(lastItem.getAnswer() + "\n");
-                FXtime.setText(lastItem.getTime() + " ");
-                FXdate.setText(lastItem.getDate());
+                FXcaller.setText(lastItem.getCaller()+ " ");
+             
+                FXtime.setText(lastItem.getTime() + " : " + lastItem.getDate());
+                FXdate.setText(" ");
+                FXtime.setAlignment(Pos.CENTER);
+                
+                
+                FXanswer.setText(lastItem.getAnswer());
+                FXanswer.setAlignment(Pos.CENTER_RIGHT);
                 setGraphic(hbox);
             }
         }

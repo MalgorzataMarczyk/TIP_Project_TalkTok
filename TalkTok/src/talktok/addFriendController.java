@@ -5,6 +5,7 @@
  */
 package talktok;
 
+import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
@@ -85,7 +86,15 @@ public class addFriendController implements Initializable {
         
     }
     
+    @FXML
+    private void CancelButtonAction(ActionEvent event) throws IOException {
     
+       
+        
+        
+    Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+    stage.close();
+    }
     
     public void check()throws Exception {
         

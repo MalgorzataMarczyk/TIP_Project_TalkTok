@@ -328,7 +328,7 @@ private double yOffset = 0;
                                                     Scene scene = new Scene(fxmlLoader.load());
                                                     
                                                     Stage stage = new Stage();
-                                                    //stage.initStyle(StageStyle.UNDECORATED);
+                                                    stage.initStyle(StageStyle.UNDECORATED);
                                                     stage.setScene(scene);
                                                     stage.show();
                                                     
@@ -365,7 +365,7 @@ private double yOffset = 0;
                                                     Scene scene = new Scene(fxmlLoader.load());
                                                     
                                                     Stage stage = new Stage();
-                                                    //stage.initStyle(StageStyle.UNDECORATED);
+                                                    stage.initStyle(StageStyle.UNDECORATED);
                                                     stage.setScene(scene);
                                                     stage.show();
                                                    
@@ -431,6 +431,7 @@ private double yOffset = 0;
         
         public void sendCallEndToUser (String inCallUserName,String WhoCalled, String time) throws IOException{
             outputStream.writeInt(20);
+           
             outputStream.writeObject(inCallUserName);
              outputStream.writeObject(WhoCalled);
              outputStream.writeObject(time);

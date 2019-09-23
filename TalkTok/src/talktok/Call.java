@@ -64,10 +64,9 @@ public class Call {
 						.getLine(dataLineInfo);			
 				sourceDataLine.open(audioFormat);
 			} catch (SocketException ex) {
-				Logger.getLogger(Client.class.getName()).log(Level.SEVERE,
-						null, ex);
+				
 			} catch (LineUnavailableException e) {
-				e.printStackTrace();
+				
 			}
 		}
 
@@ -78,7 +77,7 @@ public class Call {
 				byte[] temp = new byte[5000];
 				while (inCall) {
                                            while (inCall && hearing){
-                                    ////////////rozpierdala sie jak wyciszamy mikrofon
+                                    ////////////psuje sie jak wyciszamy mikrofon
 					DatagramPacket packet = new DatagramPacket(temp,
 							temp.length);
 					ds.receive(packet);

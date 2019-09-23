@@ -156,10 +156,14 @@ public class ClientThread extends Thread {
                                     String inCallUserName = (String) inputStream.readObject();
                                     String UserWhichCalled = (String) inputStream.readObject();
                                     String Time = (String) inputStream.readObject();
+                                    String TrueInCall=inCallUserName;
+                                    
                                     if(UserWhichCalled.equals("me")){
                                         UserWhichCalled=TrueUsername;}
+                                    else{inCallUserName=TrueUsername;} 
                                     
-                                    else if (!Time.equals("none")){
+                                    
+                                    if (!Time.equals("none")){
                                         System.out.println("koniec rozmowy" + UserWhichCalled + "-" + inCallUserName + " : " + Time);
                                      /////wpychamy do bazy historie bo wiemy ze trwało połączenie
                                      insertStory(UserWhichCalled,inCallUserName,Time);
@@ -167,7 +171,7 @@ public class ClientThread extends Thread {
                                     else {System.out.println("Odrzuciło");}
                                     System.out.println("In call user name: " + inCallUserName);
                                     System.out.println("User which called name: " + UserWhichCalled);
-                                    callingToUser(inCallUserName, END_CALL, inCallUserName);
+                                    callingToUser(TrueInCall, END_CALL, TrueUsername);
                                 }
                                 else if(command == SERVER_GET_FRIENDS){
                                     System.out.println(SERVER_GET_FRIENDS);
@@ -587,7 +591,7 @@ public class ClientThread extends Thread {
              myId = resultMyId.getString("user_id"); ///id użytkownika 
              }
              
-             ResultSet resultHistory = stmt.executeQuery("select caller_id, receiver_id, time_start, time_end from call_history where (select user_id from users where username= '" + TrueUsername + "')=receiver_id or (select user_id from users where username='" + TrueUsername + "')=caller_id order by time_end DESC;");
+             ResultSet resultHistory = stmt.executeQuery("select caller_id, receiver_id, time_start, time_end from call_history where (select user_id from users where username= '" + TrueUsername + "')=receiver_id or (select user_id from users where username='" + TrueUsername + "')=caller_id order by time_start DESC;");
                  outputStream.writeInt(13);
                 while(resultHistory.next())
                 {

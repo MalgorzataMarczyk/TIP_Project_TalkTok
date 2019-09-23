@@ -27,16 +27,14 @@
             <Label fx:id="labelUserDescription" alignment="TOP_LEFT" layoutX="122.0" layoutY="58.0" prefHeight="44.0" prefWidth="114.0" text="User description." />
             <Pane layoutY="5.0" prefHeight="26.0" prefWidth="293.0">
                <children>
-                <Button layoutX="187.0" minWidth="26.0" mnemonicParsing="false" onAction="#HistoryButtonAction" prefHeight="26.0" text="H" />
-                  <Button layoutX="219.0" layoutY="-2.0" mnemonicParsing="false" prefHeight="30.0" style="-fx-background-color: none;">
+                <Button layoutX="219.0" layoutY="-2.0" minWidth="26.0" mnemonicParsing="false" onAction="#HistoryButtonAction" prefHeight="26.0" style="-fx-background-color: none;">
                      <graphic>
                         <ImageView fitHeight="22.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../images/setting-clipart-many-gear.png" />
+                              <Image url="@../images/story.png" />
                            </image>
                         </ImageView>
-                     </graphic>
-                  </Button>
+                     </graphic></Button>
                   <Button layoutX="257.0" layoutY="-3.0" mnemonicParsing="false" onAction="#quitButtonAction" prefHeight="26.0" prefWidth="25.0" style="-fx-background-color: none;">
                      <graphic>
                   <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">

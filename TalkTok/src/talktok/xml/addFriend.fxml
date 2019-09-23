@@ -19,7 +19,7 @@
                </font>
             </Label>
             <TextField fx:id="UsernameTextField" layoutX="151.0" layoutY="63.0" prefHeight="25.0" prefWidth="241.0" />
-            <Button fx:id="buttonAdd" onAction="#AddButtonAction" layoutX="428.0" layoutY="67.0" mnemonicParsing="false" prefHeight="54.0" prefWidth="60.0" style="-fx-background-color: none;">
+            <Button fx:id="buttonAdd" layoutX="428.0" layoutY="67.0" mnemonicParsing="false" onAction="#AddButtonAction" prefHeight="54.0" prefWidth="60.0" style="-fx-background-color: none;">
                <graphic>
                   <ImageView fitHeight="46.0" fitWidth="61.0" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -31,6 +31,15 @@
             <Label layoutX="9.0" layoutY="67.0" text="Nazwa użytkownika" />
             <Label layoutX="53.0" layoutY="115.0" text="Pseudonim" />
             <TextField fx:id="AliasTextField" layoutX="151.0" layoutY="108.0" prefHeight="26.0" prefWidth="241.0" />
+            <Button fx:id="buttonCancel" layoutX="471.0" layoutY="-13.0" mnemonicParsing="false" onAction="#CancelButtonAction" prefHeight="54.0" prefWidth="23.0" style="-fx-background-color: none;">
+               <graphic>
+                  <ImageView fitHeight="23.0" fitWidth="33.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../images/close-button-big-white-black.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
             
          </children>
       </Pane>

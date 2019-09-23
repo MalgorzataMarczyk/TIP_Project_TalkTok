@@ -20,16 +20,14 @@
             </Label>
             <Pane layoutY="5.0" prefHeight="26.0" prefWidth="293.0">
                <children>
-                <Button layoutX="11.0" minWidth="26.0" mnemonicParsing="false" onAction="#BackButtonAction" prefHeight="26.0" text="&lt;-" />
-                  <Button layoutX="219.0" layoutY="-2.0" mnemonicParsing="false" prefHeight="30.0" style="-fx-background-color: none;">
+                <Button layoutX="11.0" minWidth="26.0" mnemonicParsing="false" onAction="#BackButtonAction" prefHeight="26.0" style="-fx-background-color: none;">
                      <graphic>
                         <ImageView fitHeight="22.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../images/setting-clipart-many-gear.png" />
+                              <Image url="@../images/back.png" />
                            </image>
                         </ImageView>
-                     </graphic>
-                  </Button>
+                     </graphic></Button>
                   <Button layoutX="257.0" layoutY="-3.0" mnemonicParsing="false" onAction="#quitButtonAction" prefHeight="26.0" prefWidth="25.0" style="-fx-background-color: none;">
                      <graphic>
                   <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
@@ -46,7 +44,7 @@
       </Pane>
       <Pane fx:id="paneStories" layoutX="7.0" layoutY="132.0" prefHeight="388.0" prefWidth="282.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="9.0" AnchorPane.rightAnchor="9.0" AnchorPane.topAnchor="132.0">
          <children>
-            <ListView fx:id="listStories" layoutX="1.0" layoutY="-3.0" prefHeight="388.0" prefWidth="282.0" />
+            <ListView fx:id="listStories" layoutX="1.0" layoutY="-3.0" prefHeight="388.0" prefWidth="282.0" style="-fx-background-color: rgba(255,255,255,0.3);" />
          </children></Pane>
       <ImageView fitHeight="44.0" fitWidth="64.0" layoutX="16.0" layoutY="85.0" pickOnBounds="true" preserveRatio="true">
          <image>

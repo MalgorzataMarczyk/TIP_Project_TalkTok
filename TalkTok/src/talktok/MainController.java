@@ -103,7 +103,8 @@ public class MainController implements Initializable {
         serverData = client.getServerData();
     }
     
-    
+     private double xOffset = 0;
+    private double yOffset = 0;
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         
@@ -175,7 +176,28 @@ public class MainController implements Initializable {
         fxmlLoader.setLocation(getClass().getResource("xml/addFriend.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
         Stage stage = new Stage();
-         ///stage.initStyle(StageStyle.UNDECORATED);
+         stage.initStyle(StageStyle.UNDECORATED);
+         
+         
+         ///przesuwanie ekranem na mainie
+        scene.setOnMousePressed(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                xOffset = event.getSceneX();
+                yOffset = event.getSceneY();
+            }
+        });
+        scene.setOnMouseDragged(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                stage.setX(event.getScreenX() - xOffset);
+                stage.setY(event.getScreenY() - yOffset);
+            }
+        });
+        
+        ////
+         
+         
         stage.setScene(scene);
         stage.show();
         } catch (IOException e) { 
@@ -190,9 +212,36 @@ public class MainController implements Initializable {
         fxmlLoader.setLocation(getClass().getResource("xml/activeCall.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
         Stage stage = new Stage();
-         ///stage.initStyle(StageStyle.UNDECORATED);
+         stage.initStyle(StageStyle.UNDECORATED);
+         
+         
+             ///przesuwanie ekranem na mainie
+        scene.setOnMousePressed(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                xOffset = event.getSceneX();
+                yOffset = event.getSceneY();
+            }
+        });
+        scene.setOnMouseDragged(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                stage.setX(event.getScreenX() - xOffset);
+                stage.setY(event.getScreenY() - yOffset);
+            }
+        });
+        
+        ////
+         
+         
+         
+         
         stage.setScene(scene);
         stage.show();
+        
+        
+        
+        
     } catch (IOException e) {
        
     }
@@ -206,8 +255,27 @@ public class MainController implements Initializable {
        
        Parent MainParent = FXMLLoader.load(getClass().getResource("xml/history.fxml"));
        Scene sceneMain = new Scene(MainParent);
-     
+      sceneMain.getStylesheets().add(getClass().getResource("css/story.css").toExternalForm());
        Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
+       
+       
+          ///przesuwanie ekranem na mainie
+        sceneMain.setOnMousePressed(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                xOffset = event.getSceneX();
+                yOffset = event.getSceneY();
+            }
+        });
+        sceneMain.setOnMouseDragged(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                window.setX(event.getScreenX() - xOffset);
+                window.setY(event.getScreenY() - yOffset);
+            }
+        });
+        
+        ////
        
        
         window.setScene(sceneMain);
