@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.sql.Connection;
@@ -18,7 +19,9 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -60,7 +63,6 @@ public class ClientThread extends Thread {
 	boolean listening;
 	int id;
         public String[] userDataArray = new String[5];
-        public Vector<String> userContactVector = new Vector<String>();
         
         private static final int USER_NAME = 0;
         public String [] userData;
@@ -156,19 +158,14 @@ public class ClientThread extends Thread {
                                     if(UserWhichCalled.equals("me")){
                                         UserWhichCalled=TrueUsername;}
                                     
-                                    if (!Time.equals("none")){
+                                    else if (!Time.equals("none")){
                                         System.out.println("koniec rozmowy" + UserWhichCalled + "-" + inCallUserName + " : " + Time);
                                      /////wpychamy do bazy historie bo wiemy ze trwało połączenie
                                      insertStory(UserWhichCalled,inCallUserName,Time);
-                                     
-                                    
                                     }
                                     else {System.out.println("Odrzuciło");}
-                                    
-                                    
-                                    
-                                    
-                                    
+                                    System.out.println("In call user name: " + inCallUserName);
+                                    System.out.println("User which called name: " + UserWhichCalled);
                                     callingToUser(inCallUserName, END_CALL, inCallUserName);
                                 }
                                 else if(command == SERVER_GET_FRIENDS){
@@ -451,32 +448,33 @@ public class ClientThread extends Thread {
             
         }
         
+               
         public void sendContactList(){
             try{
             ////////////ściągamy z bazy w pętli kontakty
             Connection con=DriverManager.getConnection( "jdbc:mysql://localhost:3306/tip?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC","root","password");  
                 Statement stmt=con.createStatement();
                 ResultSet resultContact = stmt.executeQuery("SELECT username, alias, photo, description, status FROM contact_list cl join users u on cl.friend_id=u.user_id where cl.owner_id = (select user_id from users where username = '" + TrueUsername + "');");
-               
                 
-                outputStream.writeInt(96);
+                ArrayList<String[]> list = new ArrayList<>();             
+
                 System.out.println("List Sended");
                 while(resultContact.next())
                 {
-                    
-                    String [] HistoryDataArray = new String[4];
-                    String contactName = resultContact.getString("username");
-                    HistoryDataArray[USER_NAME] = contactName;
-                    HistoryDataArray[1] = resultContact.getString("alias");
-                    HistoryDataArray[2] = resultContact.getString("description");
-                    HistoryDataArray[3] = ClientMap.getClientStatus(contactName);
+                    String [] array = {
+                        resultContact.getString("username"),
+                        resultContact.getString("alias"),
+                        resultContact.getString("description")};
+                    list.add( array );
+                 
+                } 
                
-                    userContactVector.add(contactName);
-               
-                    System.out.println(contactName);
-                    outputStream.writeObject(HistoryDataArray);
-                }
+                System.out.println("wyslane elementy: " + list.size());  
+                outputStream.writeInt(96);
+                outputStream.writeObject(list);
+
             con.close();
+            
             }catch(Exception e){Logger.getLogger(ClientThread.class.getName()).log(Level.SEVERE, null, e);  }
         }
         
@@ -561,7 +559,7 @@ public class ClientThread extends Thread {
                 Logger.getLogger(ClientThread.class.getName()).log(Level.SEVERE, null, ex);
             }
 
-            userContactVector.add(updateData[1]);
+
             try {
                 outputStream.writeInt(99);
                 outputStream.writeObject(message);
@@ -579,10 +577,6 @@ public class ClientThread extends Thread {
             Connection con=DriverManager.getConnection( "jdbc:mysql://localhost:3306/tip?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC","root","password");  
              Statement stmt=con.createStatement();
              Statement stmt2=con.createStatement();
-             
-    
-                   
-             
              ResultSet resultMyId = stmt.executeQuery("select user_id from users where username='" + TrueUsername + "';");
               String myId =null;
              if (resultMyId.next()) {
@@ -590,9 +584,6 @@ public class ClientThread extends Thread {
              }
              
              ResultSet resultHistory = stmt.executeQuery("select caller_id, receiver_id, time_start, time_end from call_history where (select user_id from users where username= '" + TrueUsername + "')=receiver_id or (select user_id from users where username='" + TrueUsername + "')=caller_id order by time_end DESC;");
-             
-             
-            
                  outputStream.writeInt(13);
                 while(resultHistory.next())
                 {
@@ -619,10 +610,6 @@ public class ClientThread extends Thread {
                    }
                    
                 String data = time_start;
-                
-                
-                
-                
                ContactDataArray[0] = caller;
                ContactDataArray[1] = receiver;
                ContactDataArray[2] = data;
@@ -630,12 +617,10 @@ public class ClientThread extends Thread {
                System.out.println(ContactDataArray[0]+"_" +ContactDataArray[1]+"_" +ContactDataArray[2]+"_" + ContactDataArray[3]);
                outputStream.writeObject(ContactDataArray);
                 }
-            
-            
-            
-
-            
-            con.close();
+                stmt.close();
+                stmt2.close();
+                con.close();
+                
             }catch(Exception e){Logger.getLogger(ClientThread.class.getName()).log(Level.SEVERE, null, e);  }
         
         
@@ -654,7 +639,7 @@ public class ClientThread extends Thread {
 
         System.out.println(timestamp);
              int rs=stmt.executeUpdate("insert into call_history(caller_id, receiver_id, time_start, time_end, status) values((select user_id from users where username='"+caller+"'),(select user_id from users where username='"+receiver+"'),'"+timestamp+"','"+time+"',\"0\");");  
-                  
+            con.close();
             } catch (SQLException ex) {
                 Logger.getLogger(ClientThread.class.getName()).log(Level.SEVERE, null, ex);
             }

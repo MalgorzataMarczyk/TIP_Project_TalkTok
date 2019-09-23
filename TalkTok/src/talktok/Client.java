@@ -9,7 +9,11 @@ import static java.lang.Thread.sleep;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.ListIterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
@@ -229,6 +233,7 @@ private double yOffset = 0;
                                                              }
                                                           catch (SocketTimeoutException exc)
                                                              {
+                                                                
                                                                         // you got the timeout
                                                            }
                                                           catch (EOFException exc)
@@ -268,7 +273,7 @@ private double yOffset = 0;
 					} else if (command == END_CALL) {
 						String sender = (String) inputStream.readObject();
 						call.endCall();
-						System.out.println(sender + " has ended the call");
+                                                System.out.println(sender + " has ended the call");
                                                 
 						
 					} else if (command == ERROR) {
@@ -305,33 +310,7 @@ private double yOffset = 0;
                                              
                                             
                                         } else if(command==SERVERSENCONTACTS){
-                                            System.out.println("gotit");
-                                            String [] ContactDataArray = new String[4];
-                                            ContactList.clear();
-                                            try
-                                            {
-                                                for (;;)
-                                                {
-                                                    ContactDataArray =  (String []) inputStream.readObject();
-                                                    ContactList.add( new Contact(ContactDataArray[0],ContactDataArray[1],ContactDataArray[2],ContactDataArray[3]));
-                                                }
-                                            }
-                                            catch (SocketTimeoutException exc)
-                                            {
-                                                // you got the timeout
-                                                System.out.println("wszystko");
-                                            }
-                                            catch (EOFException exc)
-                                            {
-                                                System.out.println("koniec " + ContactDataArray[0]);
-                                            }
-                                            finally{
-                                                System.out.println("try refresh list");
-                                                if(windowsController != null)
-                                                    windowsController.RefreshContactList();
-                                            }
-                                            
-                                            
+                                            getContactsFromServer();
                                         }else if(command == GET_IP){
                                             callUserIP = (String)inputStream.readObject();    
                                         }else if(command == CALL_INFORM){
@@ -433,8 +412,8 @@ private double yOffset = 0;
 		call.endCall();
 
 		try {
-			outputStream.writeInt(END_CALL);
-			outputStream.writeObject(inCallWith);
+//			outputStream.writeInt(END_CALL);
+//			outputStream.writeObject(inCallWith);
 		} catch (Exception e) {
 
 		}
@@ -651,6 +630,40 @@ private double yOffset = 0;
         public void getUserStatus(String userName) throws IOException{
            outputStream.writeInt( GET_USER_STATUS);
            outputStream.writeObject(userName);
+        }
+        
+          private class ContactObject {
+            public String name; 
+            public String alias; 
+            public String description; 
+            public String status; 
+    
+        };
+        
+        private void getContactsFromServer(){
+            System.out.println("start getting contact from server");
+            ArrayList <String[] > list = null;
+            try { 
+                    list = (ArrayList <String[] > ) inputStream.readObject();
+            } catch (IOException ex) {
+                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            if(list != null)
+            {
+                System.out.println(list.size());
+                ContactList.clear();
+                Iterator< String[]> it = list.iterator();
+                while(it.hasNext())
+                    ContactList.add(new Contact(it.next()));
+            }
+            
+            System.out.println("finish getting contact from server");
+            
+            if(windowsController != null)
+                windowsController.RefreshContactList();
+
         }
         
         

@@ -129,11 +129,12 @@ public class MainController implements Initializable {
         
         //System.out.println(ContactList.size());
         //////jeśli lista kontaktow nie jest pusta labelFriends.setVisible(false);
-        client.windowsController = this;
-        
-        StoryList = client.HistoryList;
+        StoryList = client.HistoryList; 
         System.out.println("winows created");
+        
+        client.windowsController = this;
         client.updateFriendList();
+        
     }  
    
     
@@ -148,9 +149,9 @@ public class MainController implements Initializable {
           ObservableList<Contact> ContactObservableList;
        
         ContactObservableList = FXCollections.observableArrayList();
-        System.out.println("size:"+ContactObservableList.size());
+
         ContactObservableList.addAll(ContactList);
-        
+        System.out.println("size:"+ContactObservableList.size());        
         
         lv.getItems().clear();
         lv.setItems(ContactObservableList);

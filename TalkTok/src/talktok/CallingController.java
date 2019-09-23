@@ -97,8 +97,9 @@ private double yOffset = 0;
     @FXML
     private void DeclineButtonAction(ActionEvent event) throws IOException {
           ac.stop();
+          
+          client.sendCallEndToUser(inCallWith,"none","none");
           //client.endingCall();
-         client.sendCallEndToUser(inCallWith,"none","none");
           Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
           stage.close();
           

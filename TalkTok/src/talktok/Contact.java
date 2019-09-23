@@ -32,10 +32,17 @@ public class Contact  implements Serializable {
     String status; ////0-offline, 1-online?
     
     Contact(String username, String alias, String opis, String status){
-    this.alias = alias;
-    this.username = username;
-    this.opis = opis;
-    this.status=status;
+        this.alias = alias;
+        this.username = username;    
+        this.opis = opis; 
+        this.status=status;
+    }
+       
+    public Contact(String[] array){
+        this.username = array[0];
+        this.alias = array[1];
+        this.opis = array[2];
+        this.status = "0";
     }
 
     public String getOpis() {
