@@ -239,9 +239,10 @@ public class MainController implements Initializable {
     
     
     @FXML
-    private void quitButtonAction(ActionEvent event) {
+    private void quitButtonAction(ActionEvent event) throws IOException {
+        client.deleteUserFromClientMap(serverData[0]);
         client.disconnect();
-          Platform.exit();
+        Platform.exit();
     }
     
 
@@ -326,7 +327,7 @@ public class MainController implements Initializable {
                         } catch (IOException e) {
 
                                                 } catch (InterruptedException ex) {
-                                    Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);
+                                    //Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);
                                 }
 
                     

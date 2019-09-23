@@ -99,6 +99,7 @@ private double yOffset = 0;
           ac.stop();
           
           client.sendCallEndToUser(inCallWith,"none","none");
+          System.out.println("Client who call to me is : " + inCallWith);
           //client.endingCall();
           Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
           stage.close();

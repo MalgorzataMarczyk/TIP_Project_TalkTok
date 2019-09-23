@@ -59,6 +59,7 @@ public class ClientThread extends Thread {
         private static final int SERVER_GET_FRIENDS = 30;
         private static final int GET_USER_STATUS = 40;
         private static final int USER_STATUS = 41;
+        private static final int DELETE_USER_FROM_MAP = 50;
         
 	boolean listening;
 	int id;
@@ -179,6 +180,9 @@ public class ClientThread extends Thread {
                                     String userStatus = ClientMap.getClientStatus(userName);
                                     outputStream.writeInt(USER_STATUS);
                                     outputStream.writeObject(userStatus);
+                                }else if(command == DELETE_USER_FROM_MAP){
+                                    String userName = (String) inputStream.readObject();
+                                    ClientMap.removeClient(userName);
                                 }
 			} catch (IOException e) {
 				e.printStackTrace();

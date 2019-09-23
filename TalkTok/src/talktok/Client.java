@@ -65,6 +65,7 @@ private double yOffset = 0;
          private static final int SERVER_GET_FRIENDS = 30;
          private static final int GET_USER_STATUS = 40;
          private static final int USER_STATUS = 41;
+         private static final int DELETE_USER_FROM_MAP = 50;
          private final int SERVERMESSAGE = 99;
          private final int SERVERDATA = 98;
          private final int SERVERSENTIMG = 97;
@@ -412,8 +413,8 @@ private double yOffset = 0;
 		call.endCall();
 
 		try {
-//			outputStream.writeInt(END_CALL);
-//			outputStream.writeObject(inCallWith);
+			outputStream.writeInt(END_CALL);
+			outputStream.writeObject(inCallWith);
 		} catch (Exception e) {
 
 		}
@@ -664,6 +665,11 @@ private double yOffset = 0;
             if(windowsController != null)
                 windowsController.RefreshContactList();
 
+        }
+        
+        public void deleteUserFromClientMap(String userName) throws IOException{
+            outputStream.writeInt(DELETE_USER_FROM_MAP);
+            outputStream.writeObject(userName);
         }
         
         
