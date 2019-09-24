@@ -23,12 +23,13 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import static talktok.Call.inCall;
 import static talktok.TalkTok.client;
+import static talktok.Call.endCallStatusSended;
 
 
 public class activeCallReceiverController implements Initializable{
     private boolean Mic=true;
     
-    
+    boolean StatuSended = false;
     
     @FXML
     private Label callingUserNameLabel;
@@ -66,10 +67,12 @@ public class activeCallReceiverController implements Initializable{
     
     @FXML
     private void EndCallButtonAction(ActionEvent event) throws IOException {
+       
         String time=timeText.getText();
         client.changeUserStatus(client.myName, "1");
         client.sendCallEndToUser(inCallWith,WhoCalled,time);
         client.endingCall();
+        
         
         Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
         stage.close();
@@ -81,7 +84,7 @@ public class activeCallReceiverController implements Initializable{
             client.Mic();
     }
     
-    void change(Text text) {
+    void change(Text text)  {
 		if(millis == 1000) {
 			secs++;
 			millis = 0;
@@ -95,6 +98,15 @@ public class activeCallReceiverController implements Initializable{
 			+ (((millis/10) == 0) ? "00" : (((millis/100) == 0) ? "0" : "")) + millis++);
                 
                 if(!inCall){
+                  if(!endCallStatusSended)
+                    {
+                        endCallStatusSended = true;
+                        try {
+                            client.changeUserStatus(client.myName, "1");
+                        } catch (IOException ex) {
+                            Logger.getLogger(activeCallController.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
                     Stage stage = (Stage) timeText.getScene().getWindow();
                     stage.close();
                     }

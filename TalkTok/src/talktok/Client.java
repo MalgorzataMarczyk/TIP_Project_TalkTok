@@ -368,6 +368,8 @@ private double yOffset = 0;
                                         }else if (command == USER_STATUS){
                                             String usSt = (String) inputStream.readObject();
                                             userStatus = Integer.parseInt(usSt);
+                                        }else if (command == CHANGE_USER_STATUS){
+                                            changeUserStatus(myName,"1");
                                         }
                                         else{
                                            // System.out.println("czytam");
@@ -641,9 +643,11 @@ private double yOffset = 0;
         }
         
         public void changeUserStatus(String userName, String status) throws IOException{
+            
+            String[] arrString = {userName, status};
             outputStream.writeInt(CHANGE_USER_STATUS);
-            outputStream.writeObject(userName);
-            outputStream.writeObject(status);
+            outputStream.writeObject(arrString);
+         
         }
         
         

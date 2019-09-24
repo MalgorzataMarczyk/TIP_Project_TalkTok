@@ -24,6 +24,7 @@ public class Call {
 	/* Audio variables */
 	public volatile boolean capturing = false;
 	static volatile boolean inCall = false;
+        static volatile boolean endCallStatusSended = false;
         public volatile boolean hearing = false;
 	String inCallWith;
 	AudioFormat audioFormat;
@@ -33,6 +34,7 @@ public class Call {
 
 	public Call(int initiator, int port1, int port2, String partner) {
 		inCall = true;
+                endCallStatusSended=false;
 		capturing = true;
                 hearing = true;
 		if (initiator == 0) {

@@ -171,9 +171,11 @@ public class ClientThread extends Thread {
                                      insertStory(UserWhichCalled,inCallUserName,Time);
                                     }
 //                                    else {System.out.println("Odrzuciło");}
-//                                    System.out.println("In call user name: " + inCallUserName);
-//                                    System.out.println("User which called name: " + UserWhichCalled);
+                                   //System.out.println("In call user name: " + inCallUserName);
+                                   //System.out.println("User which called name: " + UserWhichCalled);
+                                    
                                     callingToUser(TrueInCall, END_CALL, TrueUsername);
+                                    
                                 }
                                 else if(command == SERVER_GET_FRIENDS){
                                     //System.out.println(SERVER_GET_FRIENDS);
@@ -190,8 +192,9 @@ public class ClientThread extends Thread {
                                     String userName = (String) inputStream.readObject();
                                     ClientMap.removeClient(userName);
                                 }else if(command == CHANGE_USER_STATUS){
-                                  String userName = (String) inputStream.readObject();  
-                                  String userStatus = (String) inputStream.readObject();
+                                  String[] arrString = (String[]) inputStream.readObject();  
+                                  String userName = arrString[0];
+                                  String userStatus = arrString[1];
                                   if(userStatus.contains("0")){ //jeżeli jest niedostepny
                                      ClientMap.repleceClientInfo(userName,new ClientInfo(
                                                                         socket.getInetAddress().getHostAddress(),
@@ -210,6 +213,7 @@ public class ClientThread extends Thread {
 				e.printStackTrace();
 			}
 		}
+                System.out.println("zakonczono");
 	}
 
 	public static void updateClients() {

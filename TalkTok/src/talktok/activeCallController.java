@@ -32,6 +32,7 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.TargetDataLine;
 import static talktok.Call.inCall;
+import static talktok.Call.endCallStatusSended;
 import static talktok.TalkTok.client;
 
 /**
@@ -42,6 +43,8 @@ import static talktok.TalkTok.client;
 public class activeCallController implements Initializable {
 
    String inCallWith;
+   boolean StatuSended = false;
+  
     private boolean Mic=true;
  
       @FXML
@@ -83,10 +86,12 @@ public class activeCallController implements Initializable {
     
     @FXML
     private void EndCallButtonAction(ActionEvent event) throws IOException {
+       
         String time=timeText.getText();
         client.changeUserStatus(client.myName, "1");
         client.sendCallEndToUser(inCallWith,WhoCalled,time);
         client.endingCall();
+        
 
     Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
     stage.close();
@@ -110,6 +115,16 @@ public class activeCallController implements Initializable {
 		 + (((secs/10) == 0) ? "0" : "") + secs + ":" 
 			+ (((millis/10) == 0) ? "00" : (((millis/100) == 0) ? "0" : "")) + millis++);
                 if(!inCall){
+                    if(!endCallStatusSended)
+                    {
+                        endCallStatusSended = true;
+                        try {
+                            client.changeUserStatus(client.myName, "1");
+                        } catch (IOException ex) {
+                            Logger.getLogger(activeCallController.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                    
                     Stage stage = (Stage) timeText.getScene().getWindow();
                     stage.close();
                     }

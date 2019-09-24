@@ -152,7 +152,7 @@ public class MainController implements Initializable {
 
         timer = new Timer("MyTimer");//create a new Timer
 
-        timer.scheduleAtFixedRate(timerTask, new Date(), 3000);
+        timer.scheduleAtFixedRate(timerTask, new Date(), 5000);
         
     }  
    
