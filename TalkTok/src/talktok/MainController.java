@@ -142,7 +142,7 @@ public class MainController implements Initializable {
         client.windowsController = this;
         client.updateFriendList();
         
-          TimerTask timerTask = new TimerTask() {
+          /* timerTask = new TimerTask() {
 
             @Override
             public void run() {
@@ -152,7 +152,7 @@ public class MainController implements Initializable {
 
         timer = new Timer("MyTimer");//create a new Timer
 
-        timer.scheduleAtFixedRate(timerTask, new Date(), 3000);
+        timer.scheduleAtFixedRate(timerTask, new Date(), 3000);*/
         
     }  
    
@@ -160,8 +160,7 @@ public class MainController implements Initializable {
     public void RefreshContactList()
     {
          Platform.runLater(() -> {
-        System.out.println("refresh contact");
-        //////////dodawanie zawartości z serwera
+           //////////dodawanie zawartości z serwera
         ContactList = client.ContactList;
          if (!ContactList.isEmpty()){labelFriends.setVisible(false);}
       
@@ -170,7 +169,7 @@ public class MainController implements Initializable {
         ContactObservableList = FXCollections.observableArrayList();
 
         ContactObservableList.addAll(ContactList);
-        System.out.println("size:"+ContactObservableList.size());        
+        //System.out.println("size:"+ContactObservableList.size());        
         
         lv.getItems().clear();
         lv.setItems(ContactObservableList);
@@ -401,7 +400,9 @@ public class MainController implements Initializable {
                                 Thread.sleep(500);
                                 client.askServerForIP(lastItem.getUsername());
                                 client.inCallWith = lastItem.getUsername();
-                                
+                                Thread.sleep(500);
+                                System.out.println("Call user IP: "+client.getCallUserIP());
+
                                 client.startCall(client.getCallUserIP());
                             }else{
                                 JOptionPane.showMessageDialog(null, "Użytkownik nie jest dostępny");

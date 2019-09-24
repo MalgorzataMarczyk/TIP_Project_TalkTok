@@ -67,6 +67,7 @@ private double yOffset = 0;
        
         client.callACK(inCallWith);
         String destination = client.callingIP;
+        System.out.println("Destination IP: "+destination);
         client.startCallWith(destination);        
         Parent MainParent = FXMLLoader.load(getClass().getResource("xml/activeCallRereiver.fxml"));
         Scene sceneMain = new Scene(MainParent);

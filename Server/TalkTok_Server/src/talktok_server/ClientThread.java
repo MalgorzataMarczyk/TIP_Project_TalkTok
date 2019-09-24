@@ -143,9 +143,10 @@ public class ClientThread extends Thread {
                                     getCallUserIP(callUserName);
                                 }else if(command == GET_USER_IP_BY_NAME){
                                     nameForIP = (String) inputStream.readObject();
-                                    //System.out.println("Name for calling IP: "+nameForIP);
+                                    System.out.println("Name for calling IP: "+nameForIP);
                                     ClientInfo callCielnt = ClientMap.getObject(nameForIP);
                                     userIP = callCielnt.getIPaddress();
+                                    
                                     //System.out.println(userIP);
                                 }else if(command == CALL_ACK){
                                     String inCallUserName = (String) inputStream.readObject();
