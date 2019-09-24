@@ -142,7 +142,7 @@ public class MainController implements Initializable {
         client.windowsController = this;
         client.updateFriendList();
         
-          /* timerTask = new TimerTask() {
+          TimerTask timerTask = new TimerTask() {
 
             @Override
             public void run() {
@@ -152,7 +152,7 @@ public class MainController implements Initializable {
 
         timer = new Timer("MyTimer");//create a new Timer
 
-        timer.scheduleAtFixedRate(timerTask, new Date(), 3000);*/
+        timer.scheduleAtFixedRate(timerTask, new Date(), 3000);
         
     }  
    
