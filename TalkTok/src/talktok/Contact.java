@@ -42,7 +42,7 @@ public class Contact  implements Serializable {
         this.username = array[0];
         this.alias = array[1];
         this.opis = array[2];
-        this.status = "0";
+        this.status = array[3];
     }
 
     public String getOpis() {

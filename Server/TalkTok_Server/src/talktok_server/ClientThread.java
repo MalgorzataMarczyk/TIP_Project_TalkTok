@@ -488,7 +488,9 @@ public class ClientThread extends Thread {
                     String [] array = {
                         resultContact.getString("username"),
                         resultContact.getString("alias"),
-                        resultContact.getString("description")};
+                        resultContact.getString("description"),
+                        ClientMap.getClientStatus( resultContact.getString("username"))
+                    };
                     list.add( array );
                  
                 } 
@@ -594,80 +596,80 @@ public class ClientThread extends Thread {
             
         }
         
-    private void sendHistoryData() {
-        
-        try{
-            ////////////ściągamy z bazy w pętli historie
-            Connection con=DriverManager.getConnection( "jdbc:mysql://localhost:3306/tip?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC","root","password");  
-             Statement stmt=con.createStatement();
-             Statement stmt2=con.createStatement();
-             ResultSet resultMyId = stmt.executeQuery("select user_id from users where username='" + TrueUsername + "';");
-              String myId =null;
-             if (resultMyId.next()) {
-             myId = resultMyId.getString("user_id"); ///id użytkownika 
-             }
-             
-             ResultSet resultHistory = stmt.executeQuery("select caller_id, receiver_id, time_start, time_end from call_history where (select user_id from users where username= '" + TrueUsername + "')=receiver_id or (select user_id from users where username='" + TrueUsername + "')=caller_id order by time_start DESC;");
-                 outputStream.writeInt(13);
-                while(resultHistory.next())
-                {
-                   String [] ContactDataArray = new String[4];
-                   String caller = resultHistory.getString("caller_id");
-                   String receiver = resultHistory.getString("receiver_id");
-                   String time_start = resultHistory.getString("time_start");
-                   String time_end = resultHistory.getString("time_end");
-                   
-                   
-                   if(caller.equals(myId))///ja dzwoniłam do kogoś
-                   {caller="Ja";
-                   ResultSet resultFriendId = stmt2.executeQuery("select alias from users u join contact_list cl on cl.friend_id=u.user_id where cl.owner_id='" + myId + "' and friend_id='" + receiver + "';");
-                   if (resultFriendId.next()) {
-                   receiver = resultFriendId.getString("alias");}
-                   
-                    } else if(receiver.equals(myId)){ ////ktoś dzwonił do mnie
-                   receiver="Ja";
-                   ResultSet resultFriendId2 = stmt2.executeQuery("select alias from users u join contact_list cl on cl.friend_id=u.user_id where cl.owner_id='" + myId + "' and friend_id='" + caller + "';");
-                   if (resultFriendId2.next()) {
-                   caller = resultFriendId2.getString("alias");
-                   }
-                   
-                   }
-                   
-                String data = time_start;
-               ContactDataArray[0] = caller;
-               ContactDataArray[1] = receiver;
-               ContactDataArray[2] = data;
-               ContactDataArray[3] = time_end;
-               //System.out.println(ContactDataArray[0]+"_" +ContactDataArray[1]+"_" +ContactDataArray[2]+"_" + ContactDataArray[3]);
-               outputStream.writeObject(ContactDataArray);
-                }
-                stmt.close();
-                stmt2.close();
+        private void sendHistoryData() {
+
+            try{
+                ////////////ściągamy z bazy w pętli historie
+                Connection con=DriverManager.getConnection( "jdbc:mysql://localhost:3306/tip?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC","root","password");  
+                 Statement stmt=con.createStatement();
+                 Statement stmt2=con.createStatement();
+                 ResultSet resultMyId = stmt.executeQuery("select user_id from users where username='" + TrueUsername + "';");
+                  String myId =null;
+                 if (resultMyId.next()) {
+                 myId = resultMyId.getString("user_id"); ///id użytkownika 
+                 }
+
+                 ResultSet resultHistory = stmt.executeQuery("select caller_id, receiver_id, time_start, time_end from call_history where (select user_id from users where username= '" + TrueUsername + "')=receiver_id or (select user_id from users where username='" + TrueUsername + "')=caller_id order by time_start DESC;");
+                     outputStream.writeInt(13);
+                    while(resultHistory.next())
+                    {
+                       String [] ContactDataArray = new String[4];
+                       String caller = resultHistory.getString("caller_id");
+                       String receiver = resultHistory.getString("receiver_id");
+                       String time_start = resultHistory.getString("time_start");
+                       String time_end = resultHistory.getString("time_end");
+
+
+                       if(caller.equals(myId))///ja dzwoniłam do kogoś
+                       {caller="Ja";
+                       ResultSet resultFriendId = stmt2.executeQuery("select alias from users u join contact_list cl on cl.friend_id=u.user_id where cl.owner_id='" + myId + "' and friend_id='" + receiver + "';");
+                       if (resultFriendId.next()) {
+                       receiver = resultFriendId.getString("alias");}
+
+                        } else if(receiver.equals(myId)){ ////ktoś dzwonił do mnie
+                       receiver="Ja";
+                       ResultSet resultFriendId2 = stmt2.executeQuery("select alias from users u join contact_list cl on cl.friend_id=u.user_id where cl.owner_id='" + myId + "' and friend_id='" + caller + "';");
+                       if (resultFriendId2.next()) {
+                       caller = resultFriendId2.getString("alias");
+                       }
+
+                       }
+
+                    String data = time_start;
+                   ContactDataArray[0] = caller;
+                   ContactDataArray[1] = receiver;
+                   ContactDataArray[2] = data;
+                   ContactDataArray[3] = time_end;
+                   //System.out.println(ContactDataArray[0]+"_" +ContactDataArray[1]+"_" +ContactDataArray[2]+"_" + ContactDataArray[3]);
+                   outputStream.writeObject(ContactDataArray);
+                    }
+                    stmt.close();
+                    stmt2.close();
+                    con.close();
+
+                }catch(Exception e){Logger.getLogger(ClientThread.class.getName()).log(Level.SEVERE, null, e);  }
+
+
+
+        }
+
+        private void insertStory(String caller, String receiver, String time){
+             Connection con;  
+                try {
+                    con = DriverManager.getConnection( "jdbc:mysql://localhost:3306/tip?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC","root","password");
+
+
+                Statement stmt=con.createStatement();
+                long millis=System.currentTimeMillis();  
+                java.sql.Date timestamp=new java.sql.Date(millis); 
+
+            //System.out.println(timestamp);
+                 int rs=stmt.executeUpdate("insert into call_history(caller_id, receiver_id, time_start, time_end, status) values((select user_id from users where username='"+caller+"'),(select user_id from users where username='"+receiver+"'),'"+timestamp+"','"+time+"',\"0\");");  
                 con.close();
-                
-            }catch(Exception e){Logger.getLogger(ClientThread.class.getName()).log(Level.SEVERE, null, e);  }
-        
-        
-        
-    }
-
-    private void insertStory(String caller, String receiver, String time){
-         Connection con;  
-            try {
-                con = DriverManager.getConnection( "jdbc:mysql://localhost:3306/tip?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC","root","password");
-            
-
-            Statement stmt=con.createStatement();
-            long millis=System.currentTimeMillis();  
-            java.sql.Date timestamp=new java.sql.Date(millis); 
-
-        //System.out.println(timestamp);
-             int rs=stmt.executeUpdate("insert into call_history(caller_id, receiver_id, time_start, time_end, status) values((select user_id from users where username='"+caller+"'),(select user_id from users where username='"+receiver+"'),'"+timestamp+"','"+time+"',\"0\");");  
-            con.close();
-            } catch (SQLException ex) {
-                Logger.getLogger(ClientThread.class.getName()).log(Level.SEVERE, null, ex);
-            }
-    }
+                } catch (SQLException ex) {
+                    Logger.getLogger(ClientThread.class.getName()).log(Level.SEVERE, null, ex);
+                }
+        }
     
     
 }

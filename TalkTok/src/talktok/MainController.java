@@ -11,8 +11,11 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.ResourceBundle;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
@@ -92,6 +95,8 @@ public class MainController implements Initializable {
     
     String [] serverData;
     
+    Timer timer;
+    
     public static String userName;
     
     public static boolean calling = false;
@@ -136,6 +141,18 @@ public class MainController implements Initializable {
         
         client.windowsController = this;
         client.updateFriendList();
+        
+          TimerTask timerTask = new TimerTask() {
+
+            @Override
+            public void run() {
+                 client.updateFriendList();
+            }
+        };
+
+        timer = new Timer("MyTimer");//create a new Timer
+
+        timer.scheduleAtFixedRate(timerTask, new Date(), 3000);
         
     }  
    
@@ -309,6 +326,7 @@ public class MainController implements Initializable {
     
     @FXML
     private void quitButtonAction(ActionEvent event) throws IOException {
+        timer.cancel();
         client.deleteUserFromClientMap(serverData[0]);
         client.disconnect();
         Platform.exit();
@@ -362,8 +380,12 @@ public class MainController implements Initializable {
 });
 
             FXalias.setFont(new Font("Arial", 22));
-            FXopis.setTranslateX(40);
-            hbox.getChildren().addAll(FXalias,FXopis, pane, buttonC);
+            FXopis.setTranslateX(30);
+            FXstatus.setFont(new Font("Arial", 9));
+            FXstatus.setTranslateX(60);
+            FXstatus.setTranslateY(8);
+            FXopis.setTranslateY(5);
+            hbox.getChildren().addAll(FXalias,FXopis, FXstatus, pane, buttonC);
             HBox.setHgrow(pane, Priority.ALWAYS);
             buttonC.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
@@ -417,8 +439,16 @@ public class MainController implements Initializable {
                 lastItem = item;
                 ///label.setText(item!=null ? item : "<null>");
                  
-                FXstatus.setText(String.valueOf(lastItem.getStatus()));
+                
                 FXalias.setText(lastItem.getAlias());
+                //System.out.println(lastItem.getStatus());
+                if(lastItem.getStatus().compareTo("0") == 0){
+                    FXstatus.setText("NDSTP");
+                }
+                else{
+                    FXstatus.setText("DSTP");
+                }
+                
                 FXopis.setText(lastItem.getOpis());
                 setGraphic(hbox);
             }
