@@ -38,6 +38,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
@@ -347,7 +348,7 @@ public class MainController implements Initializable {
         //Button buttonR = new Button(); ///usun ze znajomych
         Contact lastItem;
 
-        public XCell() {
+        public XCell(){
             super();
             buttonC.setId("call");
             //buttonR.setId("remove");
@@ -359,15 +360,7 @@ public class MainController implements Initializable {
     ImageView imageView = new ImageView(image);            
     buttonC.setGraphic(imageView);
 });
-            
-//                    Platform.runLater(() -> {
-//            InputStream input = getClass().getResourceAsStream("images/remove.png");
-//            //set the size for image
-//            Image image = new Image(input, 18, 18, true, true);
-//            ImageView imageView = new ImageView(image);            
-//            buttonR.setGraphic(imageView);
-//        });
-            
+
             FXalias.setFont(new Font("Arial", 22));
             FXopis.setTranslateX(40);
             hbox.getChildren().addAll(FXalias,FXopis, pane, buttonC);

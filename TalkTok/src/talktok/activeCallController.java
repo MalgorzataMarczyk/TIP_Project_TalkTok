@@ -50,16 +50,21 @@ public class activeCallController implements Initializable {
     private Text timeText;
     int mins = 0, secs = 0, millis = 0;
     Timeline timeline;
-private String WhoCalled;
+    private String WhoCalled;
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        
-        
-        
+
         inCallWith = client.inCallWith;
         WhoCalled="me";
         receiverUserNameLabel.setText("Call with: "+inCallWith);
+       try {
+           client.changeUserStatus(client.myName, "0");
+       } catch (IOException ex) {
+           Logger.getLogger(activeCallController.class.getName()).log(Level.SEVERE, null, ex);
+       }
+        
+        //System.out.println("My name is : "+client.myName);
         
         timeText.setText("00:00:000"); 
 	timeline = new Timeline(new KeyFrame(Duration.millis(1), new EventHandler<ActionEvent>() {
@@ -78,12 +83,11 @@ private String WhoCalled;
     
     @FXML
     private void EndCallButtonAction(ActionEvent event) throws IOException {
-    
-       
         String time=timeText.getText();
+        client.changeUserStatus(client.myName, "1");
         client.sendCallEndToUser(inCallWith,WhoCalled,time);
-         client.endingCall();
-        
+        client.endingCall();
+
     Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
     stage.close();
     }

@@ -8,6 +8,8 @@ package talktok;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
@@ -43,6 +45,11 @@ public class activeCallReceiverController implements Initializable{
          inCallWith = client.inCallWith;
          WhoCalled=inCallWith;
          callingUserNameLabel.setText("Call with: "+inCallWith);
+          try {
+           client.changeUserStatus(client.myName, "0");
+       } catch (IOException ex) {
+           Logger.getLogger(activeCallController.class.getName()).log(Level.SEVERE, null, ex);
+       }
         
          timeText.setText("00:00:000"); 
 	timeline = new Timeline(new KeyFrame(Duration.millis(1), new EventHandler<ActionEvent>() {
@@ -60,8 +67,10 @@ public class activeCallReceiverController implements Initializable{
     @FXML
     private void EndCallButtonAction(ActionEvent event) throws IOException {
         String time=timeText.getText();
+        client.changeUserStatus(client.myName, "1");
         client.sendCallEndToUser(inCallWith,WhoCalled,time);
         client.endingCall();
+        
         Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
         stage.close();
     }

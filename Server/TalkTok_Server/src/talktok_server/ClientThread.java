@@ -59,6 +59,7 @@ public class ClientThread extends Thread {
         private static final int SERVER_GET_FRIENDS = 30;
         private static final int GET_USER_STATUS = 40;
         private static final int USER_STATUS = 41;
+        private static final int CHANGE_USER_STATUS = 42;
         private static final int DELETE_USER_FROM_MAP = 50;
         
 	boolean listening;
@@ -142,7 +143,7 @@ public class ClientThread extends Thread {
                                     getCallUserIP(callUserName);
                                 }else if(command == GET_USER_IP_BY_NAME){
                                     nameForIP = (String) inputStream.readObject();
-                                    System.out.println("Name for calling IP: "+nameForIP);
+                                    //System.out.println("Name for calling IP: "+nameForIP);
                                     ClientInfo callCielnt = ClientMap.getObject(nameForIP);
                                     userIP = callCielnt.getIPaddress();
                                     //System.out.println(userIP);
@@ -164,17 +165,17 @@ public class ClientThread extends Thread {
                                     
                                     
                                     if (!Time.equals("none")){
-                                        System.out.println("koniec rozmowy" + UserWhichCalled + "-" + inCallUserName + " : " + Time);
+                                        //System.out.println("koniec rozmowy" + UserWhichCalled + "-" + inCallUserName + " : " + Time);
                                      /////wpychamy do bazy historie bo wiemy ze trwało połączenie
                                      insertStory(UserWhichCalled,inCallUserName,Time);
                                     }
-                                    else {System.out.println("Odrzuciło");}
-                                    System.out.println("In call user name: " + inCallUserName);
-                                    System.out.println("User which called name: " + UserWhichCalled);
+//                                    else {System.out.println("Odrzuciło");}
+//                                    System.out.println("In call user name: " + inCallUserName);
+//                                    System.out.println("User which called name: " + UserWhichCalled);
                                     callingToUser(TrueInCall, END_CALL, TrueUsername);
                                 }
                                 else if(command == SERVER_GET_FRIENDS){
-                                    System.out.println(SERVER_GET_FRIENDS);
+                                    //System.out.println(SERVER_GET_FRIENDS);
                                     String temp = (String)inputStream.readObject();
                                     
                                     sendContactList();
@@ -187,6 +188,20 @@ public class ClientThread extends Thread {
                                 }else if(command == DELETE_USER_FROM_MAP){
                                     String userName = (String) inputStream.readObject();
                                     ClientMap.removeClient(userName);
+                                }else if(command == CHANGE_USER_STATUS){
+                                  String userName = (String) inputStream.readObject();  
+                                  String userStatus = (String) inputStream.readObject();
+                                  if(userStatus.contains("0")){ //jeżeli jest niedostepny
+                                     ClientMap.repleceClientInfo(userName,new ClientInfo(
+                                                                        socket.getInetAddress().getHostAddress(),
+                                                                        ClientInfo.NIEDOSTEPNY,
+                                                                        userName) ); 
+                                  }else{
+                                      ClientMap.repleceClientInfo(userName,new ClientInfo(
+                                                                        socket.getInetAddress().getHostAddress(),
+                                                                        ClientInfo.DOSTEPNY,
+                                                                        userName) );
+                                  }
                                 }
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -215,6 +230,7 @@ public class ClientThread extends Thread {
 			}
 		}
 	}
+        
         public static void callingToUser(String targetUser, int type, Object message) {
 		for (ClientThread c : Talktok_Server.clients) {
                     if(c.userData[USER_NAME].equals(targetUser))
@@ -466,7 +482,7 @@ public class ClientThread extends Thread {
                 
                 ArrayList<String[]> list = new ArrayList<>();             
 
-                System.out.println("List Sended");
+                //System.out.println("List Sended");
                 while(resultContact.next())
                 {
                     String [] array = {
@@ -477,7 +493,7 @@ public class ClientThread extends Thread {
                  
                 } 
                
-                System.out.println("wyslane elementy: " + list.size());  
+                //System.out.println("wyslane elementy: " + list.size());  
                 outputStream.writeInt(96);
                 outputStream.writeObject(list);
 
@@ -534,7 +550,7 @@ public class ClientThread extends Thread {
             try{
                  Connection con=DriverManager.getConnection( "jdbc:mysql://localhost:3306/tip?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC","root","password");  
                
-                 System.out.println(updateData[0]+ " - " +  updateData[1] + " - " +  updateData[2]);
+                 //System.out.println(updateData[0]+ " - " +  updateData[1] + " - " +  updateData[2]);
                  
                  
                  Statement stmt=con.createStatement();
@@ -560,7 +576,7 @@ public class ClientThread extends Thread {
                     else
                         message = 3;
                 }
-                System.out.println("contacs: " + message);
+                //System.out.println("contacs: " + message);
 
                 con.close();
             } catch (SQLException ex) {
@@ -622,7 +638,7 @@ public class ClientThread extends Thread {
                ContactDataArray[1] = receiver;
                ContactDataArray[2] = data;
                ContactDataArray[3] = time_end;
-               System.out.println(ContactDataArray[0]+"_" +ContactDataArray[1]+"_" +ContactDataArray[2]+"_" + ContactDataArray[3]);
+               //System.out.println(ContactDataArray[0]+"_" +ContactDataArray[1]+"_" +ContactDataArray[2]+"_" + ContactDataArray[3]);
                outputStream.writeObject(ContactDataArray);
                 }
                 stmt.close();
@@ -645,7 +661,7 @@ public class ClientThread extends Thread {
             long millis=System.currentTimeMillis();  
             java.sql.Date timestamp=new java.sql.Date(millis); 
 
-        System.out.println(timestamp);
+        //System.out.println(timestamp);
              int rs=stmt.executeUpdate("insert into call_history(caller_id, receiver_id, time_start, time_end, status) values((select user_id from users where username='"+caller+"'),(select user_id from users where username='"+receiver+"'),'"+timestamp+"','"+time+"',\"0\");");  
             con.close();
             } catch (SQLException ex) {

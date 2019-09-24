@@ -65,6 +65,7 @@ private double yOffset = 0;
          private static final int SERVER_GET_FRIENDS = 30;
          private static final int GET_USER_STATUS = 40;
          private static final int USER_STATUS = 41;
+         private static final int CHANGE_USER_STATUS = 42;
          private static final int DELETE_USER_FROM_MAP = 50;
          private final int SERVERMESSAGE = 99;
          private final int SERVERDATA = 98;
@@ -87,6 +88,7 @@ private double yOffset = 0;
         private String callUserIP;
         public String callingIP;
         public Integer userStatus = 0;
+        public String myName;
         
 
 	/* Variables related to a voice call that is being made. */
@@ -117,7 +119,7 @@ private double yOffset = 0;
 			outputStream = new ObjectOutputStream(socket.getOutputStream());
 			inputStream = new ObjectInputStream(socket.getInputStream());
 		} catch (UnknownHostException e) {
-			System.out.println("The given hostname is not connected as a server");
+			//System.out.println("The given hostname is not connected as a server");
 			
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -205,16 +207,16 @@ private double yOffset = 0;
 			while (listening) {
 				try {
 					int command = inputStream.readInt();
-                                        System.out.println(command);
+                                        //System.out.println(command);
 					if (command == CONNECT) {
 						String hostname = (String) inputStream.readObject();
-						System.out.println(hostname + " connected");
+						//System.out.println(hostname + " connected");
 					} else if (command == DISCONNECT) {
 						String hostname = (String) inputStream.readObject();
-						System.out.println(hostname + " disconnected");
+						//System.out.println(hostname + " disconnected");
 					} else if (command == UPDATE) {
 						String[] list = (String[]) inputStream.readObject();
-						System.out.println("Update: " +list.length);
+						//System.out.println("Update: " +list.length);
 					} else if (command == ADD_FRIEND) {
 						//String message = (String) inputStream.readObject();
 						//System.out.println(message);
@@ -239,55 +241,27 @@ private double yOffset = 0;
                                                            }
                                                           catch (EOFException exc)
                                                           {
-                                                             System.out.println("koniec " + RecordDataArray[0]);
+                                                             //System.out.println("koniec " + RecordDataArray[0]);
                                                             }
                                             
                                         }
                                         else if (command == CALL) {
 						String sender = (String) inputStream.readObject();
-
-						//call = new Call(1, 3001, 3002, sender);
-
-						//System.out.println(sender
-						//		+ " has started a call with you");
-						/*
-                                                Platform.runLater(new Runnable(){
-                                                    @Override
-                                                    public void run() {
-                                                        
-        try {
-        FXMLLoader fxmlLoader = new FXMLLoader();
-        fxmlLoader.setLocation(getClass().getResource("xml/activeCall.fxml"));
-        Scene scene = new Scene(fxmlLoader.load());
-        Stage stage = new Stage();
-         ///stage.initStyle(StageStyle.UNDECORATED);
-        stage.setScene(scene);
-        stage.show();
-    } catch (IOException e) {
-       
-    }
-                                                    } });*/
-                                                
-                                                
-                                                
-                                                
+    
 					} else if (command == END_CALL) {
 						String sender = (String) inputStream.readObject();
 						call.endCall();
-                                                System.out.println(sender + " has ended the call");
-                                                
-						
+                                                //System.out.println(sender + " has ended the call");
 					} else if (command == ERROR) {
 						String message = (String) inputStream.readObject();
-						System.out.println(message);
-						
+						//System.out.println(message);	
 					} else if (command == MIC_ON) {
 						String sender = (String) inputStream.readObject();
-						System.out.println("on");
+						//System.out.println("on");
 						call.hearing = true; ////////do tego momentu dziala dobrze, wiemy ze sie wyciszyl
 					}else if (command == MIC_OFF) {
                                                 String sender = (String) inputStream.readObject();
-						System.out.println("off");
+						//System.out.println("off");
 						call.hearing = false;
 					}else if (command == REGISTER) {
 						
@@ -304,9 +278,9 @@ private double yOffset = 0;
                                             
                                         }
                                         else if (command == SERVERSENTIMG){
-                                            System.out.print("odbieram");
+                                            //System.out.print("odbieram");
                                             imageByte = (byte[]) inputStream.readObject();
-                                            System.out.print("odebral");
+                                            //System.out.print("odebral");
                                            
                                              
                                             
@@ -319,7 +293,7 @@ private double yOffset = 0;
                                             callData = (String[]) inputStream.readObject();
                                             callingIP = callData[0];
                                             inCallWith = callData[1];
-                                            System.out.println("Calling FROM IP: " + callingIP);
+                                           // System.out.println("Calling FROM IP: " + callingIP);
                                             Platform.runLater(()->{
                                                 try {
                                                     FXMLLoader fxmlLoader = new FXMLLoader();
@@ -396,7 +370,7 @@ private double yOffset = 0;
                                             userStatus = Integer.parseInt(usSt);
                                         }
                                         else{
-                                            System.out.println("czytam");
+                                           // System.out.println("czytam");
                                         }
 				} catch (IOException e) {
 				} catch (ClassNotFoundException e) {
@@ -453,7 +427,7 @@ private double yOffset = 0;
             call.capturing = false;
             outputStream.writeInt(MIC_OFF);
             outputStream.writeObject(inCallWith);
-            System.out.println("send");
+            //System.out.println("send");
         }else {
           call.capturing = true;
              outputStream.writeInt(MIC_ON);
@@ -466,6 +440,7 @@ private double yOffset = 0;
 
         public int Login(String [] userData){ 
              ack = 0;
+             myName = userData[0];
             try {
                 
                 outputStream.writeInt(LOGIN); ///wysyłamy do serwera co chcemy zrobić
@@ -572,10 +547,10 @@ private double yOffset = 0;
         
         public void updateFriendList(){
             try {
-                System.out.println("send request to server get friend");
+               // System.out.println("send request to server get friend");
                 outputStream.writeInt(SERVER_GET_FRIENDS);
                 outputStream.writeObject("send");
-                System.out.println("sended request to server get friend");
+               // System.out.println("sended request to server get friend");
             } catch (IOException ex) {
                 Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -633,17 +608,9 @@ private double yOffset = 0;
            outputStream.writeInt( GET_USER_STATUS);
            outputStream.writeObject(userName);
         }
-        
-          private class ContactObject {
-            public String name; 
-            public String alias; 
-            public String description; 
-            public String status; 
-    
-        };
-        
+              
         private void getContactsFromServer(){
-            System.out.println("start getting contact from server");
+            //System.out.println("start getting contact from server");
             ArrayList <String[] > list = null;
             try { 
                     list = (ArrayList <String[] > ) inputStream.readObject();
@@ -654,14 +621,14 @@ private double yOffset = 0;
             }
             if(list != null)
             {
-                System.out.println(list.size());
+               // System.out.println(list.size());
                 ContactList.clear();
                 Iterator< String[]> it = list.iterator();
                 while(it.hasNext())
                     ContactList.add(new Contact(it.next()));
             }
             
-            System.out.println("finish getting contact from server");
+           // System.out.println("finish getting contact from server");
             
             if(windowsController != null)
                 windowsController.RefreshContactList();
@@ -671,6 +638,12 @@ private double yOffset = 0;
         public void deleteUserFromClientMap(String userName) throws IOException{
             outputStream.writeInt(DELETE_USER_FROM_MAP);
             outputStream.writeObject(userName);
+        }
+        
+        public void changeUserStatus(String userName, String status) throws IOException{
+            outputStream.writeInt(CHANGE_USER_STATUS);
+            outputStream.writeObject(userName);
+            outputStream.writeObject(status);
         }
         
         
